@@ -8,14 +8,14 @@ const socials = [
 
 export const Footer = () => {
   return (
-    <footer className="relative z-10 overflow-hidden border-t border-white/10 bg-gradient-to-b from-black/60 via-black/70 to-night px-6 py-12 sm:px-8 lg:px-14">
+    <footer className="relative z-10 overflow-hidden border-t border-white/10 bg-gradient-to-b from-black/70 via-black/80 to-night px-6 py-12 sm:px-8 lg:px-14">
       <div className="absolute inset-0 bg-animated opacity-60" aria-hidden />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/60 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-rose-400/60 to-transparent" />
       <div className="max-w-6xl mx-auto relative">
         <div className="flex flex-wrap items-center justify-between gap-6">
           <div>
-            <h3 className="font-display text-2xl text-white">HyperRacing</h3>
-            <p className="text-slate-300">Future-grade racing with neon tech and fearless speed.</p>
+            <h3 className="font-display text-2xl text-white">HYPER RACING</h3>
+            <p className="text-slate-300">Cinematic hypercar culture. Built for speed and spectacle.</p>
           </div>
           <div className="flex items-center gap-3">
             {socials.map((social) => (
@@ -26,8 +26,8 @@ export const Footer = () => {
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.96 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-fuchsia-400/20 opacity-0 transition group-hover:opacity-100" />
-                <svg className="relative h-6 w-6 fill-current text-cyan-100" viewBox="0 0 24 24" aria-hidden>
+                <div className="absolute inset-0 bg-gradient-to-br from-rose-500/25 to-orange-400/25 opacity-0 transition group-hover:opacity-100" />
+                <svg className="relative h-6 w-6 fill-current text-rose-100" viewBox="0 0 24 24" aria-hidden>
                   <path d={social.icon} />
                 </svg>
               </motion.a>
@@ -37,10 +37,10 @@ export const Footer = () => {
 
         <div className="mt-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" aria-hidden />
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4 text-sm text-slate-400">
-          <span>© {new Date().getFullYear()} HyperRacing. All rights reserved.</span>
-          <div className="flex gap-4 text-cyan-100">
-            <span className="h-px w-12 bg-gradient-to-r from-cyan-300 to-fuchsia-300" />
-            Neon lines animate softly across the footer.
+          <span>© {new Date().getFullYear()} HYPER RACING. All rights reserved.</span>
+          <div className="flex gap-4 text-rose-100">
+            <span className="h-px w-12 bg-gradient-to-r from-rose-400 to-orange-300" />
+            Racing in every frame.
           </div>
         </div>
       </div>

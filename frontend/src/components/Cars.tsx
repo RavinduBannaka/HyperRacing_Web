@@ -5,35 +5,35 @@ import { useScrollReveal } from '../hooks/useScrollReveal'
 const cars = [
   {
     name: 'VX-09 Tempest',
-    class: 'Sprint',
+    class: 'Hyper',
     speed: '402 km/h',
-    color: 'Cyan Flux',
+    color: 'Crimson Veil',
     image:
-      'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1400&q=80',
+      'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2400&q=80&sat=-12',
   },
   {
     name: 'Astra Helix',
-    class: 'Drift',
+    class: 'Circuit',
     speed: '376 km/h',
-    color: 'Plasma Pink',
+    color: 'Molten Silver',
     image:
-      'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1400&q=80',
+      'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=2400&q=80&sat=-18',
   },
   {
     name: 'Nova Specter',
-    class: 'Hyper',
+    class: 'Sprint',
     speed: '428 km/h',
-    color: 'Ion Blue',
+    color: 'Shadow Black',
     image:
-      'https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1400&q=80',
+      'https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=2400&q=80&sat=-18',
   },
   {
     name: 'Mirage Vanta',
-    class: 'Stealth',
+    class: 'Time Attack',
     speed: '390 km/h',
-    color: 'Black Neon',
+    color: 'Scarlet Edge',
     image:
-      'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1400&q=80',
+      'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=2400&q=80&sat=-18',
   },
 ]
 
@@ -45,11 +45,11 @@ export const Cars = () => {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-wrap items-baseline justify-between gap-4">
           <div>
-            <p className="text-sm uppercase tracking-[0.28em] text-cyan-100">Garage</p>
-            <h2 className="font-display text-3xl text-white sm:text-4xl">Futuristic rides with tilt + glow</h2>
+            <p className="text-sm uppercase tracking-[0.28em] text-rose-100">Featured Cars</p>
+            <h2 className="font-display text-3xl text-white sm:text-4xl">Signature hypercars with glassmorphism sheen</h2>
           </div>
           <p className="max-w-xl text-slate-300">
-            Hover to tilt each chassis in 3D and reveal class data with glassmorphism overlays.
+            Hover to tilt each chassis in 3D and reveal specs across our flagship fleet.
           </p>
         </div>
 
@@ -70,7 +70,7 @@ export const Cars = () => {
                   style={{ backgroundImage: `url(${car.image})` }}
                 />
                 <div className="relative p-4">
-                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.24em] text-cyan-100">
+                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.24em] text-rose-100">
                     <span>{car.class}</span>
                     <span className="rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[11px] text-slate-200">
                       {car.color}
@@ -78,9 +78,9 @@ export const Cars = () => {
                   </div>
                   <h3 className="mt-2 font-display text-xl text-white">{car.name}</h3>
                   <p className="text-sm text-slate-300">Top speed {car.speed}</p>
-                  <div className="mt-4 flex items-center gap-2 text-sm text-cyan-100">
-                    <span className="h-1 w-8 rounded-full bg-gradient-to-r from-cyan-300 to-fuchsia-300" />
-                    Adaptive aero + drift tuning
+                  <div className="mt-4 flex items-center gap-2 text-sm text-rose-100">
+                    <span className="h-1 w-8 rounded-full bg-gradient-to-r from-rose-400 to-orange-300" />
+                    Adaptive aero + launch tuning
                   </div>
                 </div>
               </motion.div>
