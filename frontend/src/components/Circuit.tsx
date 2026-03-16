@@ -1,32 +1,18 @@
 import { motion } from 'framer-motion'
 import { useScrollReveal } from '../hooks/useScrollReveal'
+import { categories as categoryData } from '../data/categories'
+import { SectionTitle } from './SectionTitle'
 
-const circuits = [
-  {
-    name: 'Circuit / Grand Prix',
-    distance: '5-7 km',
-    mood: 'Technical apex mastery',
-    image:
-      'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2200&q=80&sat=-12',
-  },
-  {
-    name: 'Sprint / Street',
-    distance: '3-5 km',
-    mood: 'Tight city night run',
-    image:
-      'https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=2200&q=80&sat=-18',
-  },
-  {
-    name: 'Drift / Exhibition',
-    distance: 'Custom',
-    mood: 'Smoke, lights, precision',
-    image:
-      'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=2200&q=80&sat=-18',
-  },
-]
+type CircuitProps = {
+  eyebrow?: string
+  title?: string
+  description?: string
+  limit?: number
+}
 
-export const Circuit = () => {
+export const Circuit = ({ eyebrow, title, description, limit }: CircuitProps) => {
   const sectionRef = useScrollReveal({ y: 40 })
+  const circuits = limit ? categoryData.slice(0, limit) : categoryData
 
   return (
     <section
@@ -37,17 +23,17 @@ export const Circuit = () => {
       <div className="absolute inset-x-0 -top-32 h-64 bg-gradient-to-b from-rose-500/10 via-red-500/10 to-transparent blur-3xl" />
       <div className="max-w-6xl mx-auto relative">
         <div className="flex flex-wrap items-center justify-between gap-6">
-          <div className="space-y-3">
-            <p className="text-sm uppercase tracking-[0.28em] text-rose-100">Racing Categories</p>
-            <h2 className="font-display text-3xl text-white sm:text-4xl">Choose your battleground</h2>
-            <p className="max-w-xl text-slate-300">
-              Circuit domination, sprint aggression, or smoke-filled drift arenas—scroll to pick how you rewrite the
-              leaderboard.
-            </p>
-          </div>
+          <SectionTitle
+            eyebrow={eyebrow ?? 'Racing Categories'}
+            title={title ?? 'Choose your battleground'}
+            description={
+              description ??
+              'Circuit domination, sprint aggression, or smoke-filled drift arenas—scroll to pick how you rewrite the leaderboard.'
+            }
+          />
           <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-slate-100 shadow-neon">
             <span className="h-2 w-2 rounded-full bg-rose-300 animate-pulsefast" />
-            Live session scanning · 3 formats loaded
+            Live session scanning · {circuits.length} formats loaded
           </div>
         </div>
 

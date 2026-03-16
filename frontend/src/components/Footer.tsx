@@ -8,7 +8,7 @@ const socials = [
 
 export const Footer = () => {
   return (
-    <footer className="relative z-10 overflow-hidden border-t border-white/10 bg-gradient-to-b from-black/70 via-black/80 to-night px-6 py-12 sm:px-8 lg:px-14">
+    <footer className="relative z-10 overflow-hidden border-t border-white/10 bg-gradient-to-b from-black/70 via-black/80 to-[#050608] px-6 py-12 sm:px-8 lg:px-14">
       <div className="absolute inset-0 bg-animated opacity-60" aria-hidden />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-rose-400/60 to-transparent" />
       <div className="max-w-6xl mx-auto relative">

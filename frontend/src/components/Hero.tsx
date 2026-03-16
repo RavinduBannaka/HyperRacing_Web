@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useParallax } from '../hooks/useParallax'
 import { ParticleField } from './ParticleField'
 import { GamingLogo } from './GamingLogo'
+import { Link } from 'react-router-dom'
 
 const heroBackground =
   'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2400&q=80&sat=-12'
@@ -105,23 +106,25 @@ export const Hero = () => {
           </motion.p>
 
           <div className="hero-cta flex flex-wrap gap-4">
-            <motion.button
-              onPointerMove={handleRipple}
-              className="neon-button inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-500/80 via-red-500/80 to-orange-400/80 px-7 py-3 font-semibold text-white shadow-glow ring-1 ring-rose-400/60 transition hover:-translate-y-0.5 hover:shadow-neon"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              Start your engine
-              <span className="text-base">→</span>
-            </motion.button>
-            <motion.button
-              onPointerMove={handleRipple}
-              className="neon-button inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-3 font-semibold text-slate-100 transition hover:-translate-y-0.5 hover:border-rose-300/60"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              View garage
-            </motion.button>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                to="/cars"
+                onPointerMove={handleRipple as any}
+                className="neon-button inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-500/80 via-red-500/80 to-orange-400/80 px-7 py-3 font-semibold text-white shadow-glow ring-1 ring-rose-400/60 transition hover:-translate-y-0.5 hover:shadow-neon"
+              >
+                Start your engine
+                <span className="text-base">→</span>
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                to="/categories"
+                onPointerMove={handleRipple as any}
+                className="neon-button inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-3 font-semibold text-slate-100 transition hover:-translate-y-0.5 hover:border-rose-300/60"
+              >
+                View garage
+              </Link>
+            </motion.div>
           </div>
 
           <div className="hero-cta grid gap-4 sm:grid-cols-3">

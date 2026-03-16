@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { GamingLogo } from './GamingLogo'
 
@@ -37,23 +38,23 @@ export const CarBanner = () => {
               </span>
             </div>
             <div className="flex flex-wrap gap-4 pt-2">
-              <motion.a
-                href="#auth"
-                className="neon-button inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-500/80 via-red-500/80 to-orange-400/80 px-6 py-3 font-semibold text-white shadow-neon ring-1 ring-rose-400/60 transition hover:-translate-y-0.5"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Buy this machine
-                <span className="text-base">→</span>
-              </motion.a>
-              <motion.a
-                href="#categories"
-                className="neon-button inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-3 font-semibold text-slate-100 transition hover:-translate-y-0.5 hover:border-rose-300/60"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Preview next lap
-              </motion.a>
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                <Link
+                  to="/contact"
+                  className="neon-button inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-500/80 via-red-500/80 to-orange-400/80 px-6 py-3 font-semibold text-white shadow-neon ring-1 ring-rose-400/60 transition hover:-translate-y-0.5"
+                >
+                  Buy this machine
+                  <span className="text-base">→</span>
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Link
+                  to="/categories"
+                  className="neon-button inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-3 font-semibold text-slate-100 transition hover:-translate-y-0.5 hover:border-rose-300/60"
+                >
+                  Preview next lap
+                </Link>
+              </motion.div>
             </div>
           </div>
           <div className="relative h-full min-h-[280px] lg:min-h-[360px] overflow-hidden">
