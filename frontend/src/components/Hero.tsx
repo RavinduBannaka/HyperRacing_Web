@@ -5,8 +5,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useParallax } from '../hooks/useParallax'
 import { ParticleField } from './ParticleField'
 
-const heroCar =
-  "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1600&q=80"
+const heroBackground =
+  'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1800&q=80'
+
+const sprintClassCar =
+  'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1600&q=80'
 
 export const Hero = () => {
   const sectionRef = useRef<HTMLElement | null>(null)
@@ -63,7 +66,7 @@ export const Hero = () => {
         <div
           ref={backgroundRef}
           className="absolute -inset-12 scale-110 bg-cover bg-center opacity-80"
-          style={{ backgroundImage: `url(${heroCar})` }}
+          style={{ backgroundImage: `url(${heroBackground})` }}
         />
         <div className="speed-lines" />
         <div className="hyper-grid absolute inset-0" />
@@ -149,7 +152,7 @@ export const Hero = () => {
           <div className="relative mt-6 overflow-hidden rounded-2xl border border-white/10 bg-black/40">
             <div
               className="h-[320px] bg-cover bg-center opacity-95"
-              style={{ backgroundImage: `url(${heroCar})` }}
+               style={{ backgroundImage: `url(${sprintClassCar})` }}
             />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black" />
             <div className="absolute inset-0" aria-hidden>
