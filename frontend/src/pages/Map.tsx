@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom'
 import { PageShell } from '../components/PageShell'
 import { GlowCard } from '../components/GlowCard'
+import { useGame } from '../context/GameContext'
 
 const mapBg =
   'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=2100&q=80&sat=-14'
@@ -12,12 +14,21 @@ const mapMarkers = [
 ]
 
 export const MapPage = () => {
+  const { maps } = useGame()
   return (
     <PageShell
       eyebrow="Navigation"
       title="Track Map"
       subtitle="A cinematic control room showing hotspots, lobbies, and live race energy across the Hyper map."
       backgroundImage={mapBg}
+      cta={
+        <Link
+          to="/map-store"
+          className="neon-button rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white"
+        >
+          Buy maps
+        </Link>
+      }
     >
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/60 p-4 shadow-glow">
@@ -51,6 +62,19 @@ export const MapPage = () => {
               <p>• 3 lobbies in quali • 1 drift-only lobby</p>
               <p>• Weather: Mixed dry/overcast • Track temp 28°C</p>
               <p>• Ghost uploads: 12 in last hour</p>
+            </div>
+          </GlowCard>
+          <GlowCard eyebrow="Unlocked" title="Owned maps" tone="success">
+            <div className="flex flex-wrap gap-2 text-sm text-slate-200">
+              {maps.length ? (
+                maps.map((m) => (
+                  <span key={m.id} className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-white">
+                    {m.name}
+                  </span>
+                ))
+              ) : (
+                <span className="text-slate-300">No maps unlocked yet.</span>
+              )}
             </div>
           </GlowCard>
           <GlowCard eyebrow="Events" title="Upcoming" tone="warning">

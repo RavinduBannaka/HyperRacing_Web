@@ -19,6 +19,7 @@ import { SpinWheel } from './pages/SpinWheel'
 import { CommunityChat } from './pages/CommunityChat'
 import { CardStore } from './pages/CardStore'
 import { MapPage } from './pages/Map'
+import { MapStore } from './pages/MapStore'
 import { Report } from './pages/Report'
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
           <Route path="/community" element={<CommunityChat />} />
           <Route path="/card-store" element={<CardStore />} />
           <Route path="/map" element={<MapPage />} />
+          <Route path="/map-store" element={<MapStore />} />
           <Route path="/report" element={<Report />} />
         </Routes>
       </main>

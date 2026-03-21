@@ -13,6 +13,8 @@ export const Login = () => {
   const [email, setEmail] = useState(user.email)
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const qrUrl =
+    'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fhyperracing.app%2Flogin%2Fqr'
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -68,7 +70,27 @@ export const Login = () => {
           >
             Enter the cockpit
           </motion.button>
-          <p className="text-sm text-slate-300">Two-factor and web3 wallets coming soon. Session is simulated for demo.</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <motion.button
+              type="button"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white"
+            >
+              <span className="h-5 w-5 rounded-full bg-white text-black grid place-items-center font-bold">G</span>
+              Continue with Google
+            </motion.button>
+            <motion.button
+              type="button"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white"
+            >
+              <span className="h-5 w-5 rounded-full bg-black text-white grid place-items-center font-bold"></span>
+              Continue with Apple
+            </motion.button>
+          </div>
+          <p className="text-sm text-slate-300">Two-factor, QR, and social OAuth are UI-ready; current session is simulated.</p>
         </form>
 
         <div className="space-y-4">
@@ -87,6 +109,18 @@ export const Login = () => {
             <Link to="/register" className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-rose-100">
               Go to Register →
             </Link>
+          </div>
+          <div className="glass-panel rounded-2xl border border-white/10 bg-white/5 p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.24em] text-rose-100">QR login</p>
+                <p className="text-sm text-slate-200">Scan to approve on your device</p>
+              </div>
+              <div className="rounded-xl border border-white/15 bg-white/10 p-2">
+                <img src={qrUrl} alt="QR code" className="h-28 w-28 rounded-lg" />
+              </div>
+            </div>
+            <p className="mt-2 text-xs text-slate-400">Use your mobile app to scan and confirm. This demo QR is static.</p>
           </div>
         </div>
       </div>

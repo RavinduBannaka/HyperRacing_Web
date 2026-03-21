@@ -17,7 +17,7 @@ type UserProfile = {
 
 type Transaction = {
   id: string
-  type: 'coins' | 'spin' | 'card'
+  type: 'coins' | 'spin' | 'card' | 'map'
   title: string
   amount: number
   coinsDelta: number
@@ -28,6 +28,16 @@ type Card = {
   id: string
   name: string
   rarity: 'Common' | 'Rare' | 'Epic' | 'Legendary'
+  price: number
+  image: string
+}
+
+type MapPack = {
+  id: string
+  name: string
+  region: string
+  description: string
+  tier: 'Standard' | 'Premium'
   price: number
   image: string
 }
@@ -52,6 +62,7 @@ type GameContextShape = {
   user: UserProfile
   coins: number
   inventory: Card[]
+  maps: MapPack[]
   messages: Message[]
   transactions: Transaction[]
   spins: SpinResult[]
@@ -60,6 +71,7 @@ type GameContextShape = {
   updateProfile: (payload: Partial<UserProfile>) => void
   purchaseCoins: (amount: number, label: string) => void
   buyCard: (card: Card) => void
+  buyMapPack: (pack: MapPack) => void
   sendMessage: (content: string) => void
   spinWheel: () => SpinResult
 }
@@ -98,6 +110,19 @@ const starterCards: Card[] = [
     price: 360,
     image:
       'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80&sat=-10',
+  },
+]
+
+const starterMaps: MapPack[] = [
+  {
+    id: 'neon-city',
+    name: 'Neon City Circuit',
+    region: 'Night sprint',
+    description: 'Chromed skyscraper canyons, dynamic rain FX, tight chicanes lit by holo-ads.',
+    tier: 'Premium',
+    price: 480,
+    image:
+      'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1800&q=80&sat=-14',
   },
 ]
 
@@ -145,6 +170,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProfile>(defaultUser)
   const [coins, setCoins] = useState(2400)
   const [inventory, setInventory] = useState<Card[]>(starterCards.slice(0, 2))
+  const [maps, setMaps] = useState<MapPack[]>(starterMaps)
   const [messages, setMessages] = useState<Message[]>(defaultMessages)
   const [transactions, setTransactions] = useState<Transaction[]>([
     { id: 't-1', type: 'coins', title: 'Starter bonus', amount: 2000, coinsDelta: 2000, timestamp: now() },
@@ -188,6 +214,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setUser((prev) => ({ ...prev, stats: { ...prev.stats, cards: prev.stats.cards + 1 } }))
   }
 
+  const buyMapPack = (pack: MapPack) => {
+    setCoins((c) => Math.max(0, c - pack.price))
+    setMaps((prev) => (prev.find((m) => m.id === pack.id) ? prev : [...prev, pack]))
+    setTransactions((tx) => [
+      { id: crypto.randomUUID(), type: 'map', title: pack.name, amount: pack.price, coinsDelta: -pack.price, timestamp: now() },
+      ...tx,
+    ])
+  }
+
   const sendMessage = (content: string) => {
     if (!content.trim()) return
     const message: Message = {
@@ -224,6 +259,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       user,
       coins,
       inventory,
+      maps,
       messages,
       transactions,
       spins,
@@ -232,10 +268,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       updateProfile,
       purchaseCoins,
       buyCard,
+      buyMapPack,
       sendMessage,
       spinWheel,
     }),
-    [user, coins, inventory, messages, transactions, spins],
+    [user, coins, inventory, maps, messages, transactions, spins],
   )
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>
