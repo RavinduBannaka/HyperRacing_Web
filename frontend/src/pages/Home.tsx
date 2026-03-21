@@ -4,6 +4,7 @@ import { Features } from '../components/Features'
 import { Gallery } from '../components/Gallery'
 import { AboutSection } from '../components/AboutSection'
 import { CarBanner } from '../components/CarBanner'
+import { MapPreview } from '../components/MapPreview'
 
 export const Home = () => {
   return (
@@ -14,6 +15,7 @@ export const Home = () => {
       <Gallery />
       <AboutSection />
       <CarBanner />
+      <MapPreview />
     </div>
   )
 }

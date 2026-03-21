@@ -38,6 +38,8 @@ type MapPack = {
   region: string
   description: string
   tier: 'Standard' | 'Premium'
+  category: 'Urban' | 'Night' | 'Desert' | 'Mountain' | 'Coastal' | 'Volcanic'
+  rarity: 'Rare' | 'Epic' | 'Legendary' | 'Exclusive'
   price: number
   image: string
 }
@@ -120,6 +122,8 @@ const starterMaps: MapPack[] = [
     region: 'Night sprint',
     description: 'Chromed skyscraper canyons, dynamic rain FX, tight chicanes lit by holo-ads.',
     tier: 'Premium',
+    category: 'Urban',
+    rarity: 'Exclusive',
     price: 480,
     image:
       'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1800&q=80&sat=-14',

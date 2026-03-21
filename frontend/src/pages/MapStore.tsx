@@ -7,13 +7,18 @@ import { useGame } from '../context/GameContext'
 const mapStoreBg =
   'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2100&q=80&sat=-14'
 
+const featuredMapImg =
+  'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=2100&q=80&sat=-12'
+
 const mapPacks = [
   {
     id: 'neon-city',
     name: 'Neon City Circuit',
     region: 'Night Sprint',
-    description: 'Chromed canyon streets drenched in neon rain. Laser chicanes + vertical overpasses.',
+    description: 'Chromed canyon skyline with rain-slick straights, laser chicanes, and billboard glow.',
     tier: 'Premium' as const,
+    category: 'Urban' as const,
+    rarity: 'Exclusive' as const,
     price: 480,
     image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1800&q=80&sat=-14',
   },
@@ -21,8 +26,10 @@ const mapPacks = [
     id: 'glacier-run',
     name: 'Glacier Run',
     region: 'Arctic Rally',
-    description: 'Icy switchbacks, aurora skyboxes, reflective ice patches, and snow FX.',
+    description: 'Frozen switchbacks under auroras with reflective ice plates and snow bursts.',
     tier: 'Premium' as const,
+    category: 'Mountain' as const,
+    rarity: 'Legendary' as const,
     price: 620,
     image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1800&q=80&sat=-20',
   },
@@ -30,8 +37,10 @@ const mapPacks = [
     id: 'harbor-loop',
     name: 'Harbor Loop',
     region: 'Coastal Endurance',
-    description: 'Night docks, container stacks, wet asphalt reflections, sweeping 180° turns.',
+    description: 'Container-yard sweepers, wet asphalt reflections, and skyline cranes overhead.',
     tier: 'Standard' as const,
+    category: 'Urban' as const,
+    rarity: 'Rare' as const,
     price: 540,
     image: 'https://images.unsplash.com/photo-1493236296276-d17357e28875?auto=format&fit=crop&w=2000&q=80&sat=-16',
   },
@@ -39,8 +48,10 @@ const mapPacks = [
     id: 'desert-apex',
     name: 'Desert Apex',
     region: 'Drift Arena',
-    description: 'Dust plumes, canyon walls, high-speed S-curves with golden-hour lighting.',
+    description: 'Canyon dust plumes, golden-hour S-curves, and wide drift pads for tandem runs.',
     tier: 'Standard' as const,
+    category: 'Desert' as const,
+    rarity: 'Epic' as const,
     price: 510,
     image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1600&q=80&sat=-14',
   },
@@ -48,8 +59,10 @@ const mapPacks = [
     id: 'skyline-ascent',
     name: 'Skyline Ascent',
     region: 'Vertical Climb',
-    description: 'Helipad jumps, glass skyways, wind shear, and thunderstorm lighting passes.',
+    description: 'Glass skyways, helipad jumps, crosswinds, and thunderstorm lighting passes.',
     tier: 'Premium' as const,
+    category: 'Mountain' as const,
+    rarity: 'Legendary' as const,
     price: 760,
     image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=2000&q=80&sat=-16',
   },
@@ -57,14 +70,16 @@ const mapPacks = [
     id: 'circuit-ember',
     name: 'Circuit Ember',
     region: 'Volcanic Sprint',
-    description: 'Lava glows under glass tarmac, ash FX, and brutal elevation changes.',
+    description: 'Lava-lit straights, ash haze, and brutal elevation drops through basalt tunnels.',
     tier: 'Premium' as const,
+    category: 'Volcanic' as const,
+    rarity: 'Exclusive' as const,
     price: 880,
     image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1900&q=80&sat=-18',
   },
 ]
 
-type Filter = 'all' | 'owned' | 'locked' | 'premium'
+type Filter = 'all' | 'owned' | 'locked' | 'premium' | 'urban' | 'night' | 'desert' | 'mountain'
 
 export const MapStore = () => {
   const { coins, maps, buyMapPack } = useGame()
@@ -78,6 +93,10 @@ export const MapStore = () => {
       if (filter === 'owned' && !owned) return false
       if (filter === 'locked' && owned) return false
       if (filter === 'premium' && map.tier !== 'Premium') return false
+      if (filter === 'urban' && map.category !== 'Urban') return false
+      if (filter === 'night' && map.region.toLowerCase().includes('night') === false) return false
+      if (filter === 'desert' && map.category !== 'Desert') return false
+      if (filter === 'mountain' && map.category !== 'Mountain') return false
       if (query && !map.name.toLowerCase().includes(query.toLowerCase()) && !map.region.toLowerCase().includes(query.toLowerCase())) return false
       return true
     })
@@ -92,6 +111,8 @@ export const MapStore = () => {
       region: pack.region,
       description: pack.description,
       tier: pack.tier,
+      category: pack.category,
+      rarity: pack.rarity,
       price: pack.price,
       image: pack.image,
     })
@@ -99,20 +120,60 @@ export const MapStore = () => {
 
   return (
     <PageShell
-      eyebrow="Navigation"
-      title="Map Store"
-      subtitle="Unlock cinematic circuits, sprint routes, and endurance maps to expand your racing universe."
+      eyebrow="Marketplace"
+      title="Command the Grid"
+      subtitle="Secure next-gen circuits, cinematic sprints, and elite locations tuned for Hyper Racing. Unlock, deploy, and own the world’s most advanced tracks."
       backgroundImage={mapStoreBg}
       cta={<span className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white">{coins.toLocaleString()} coins</span>}
     >
+      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow">
+        <div className="absolute inset-0 bg-gradient-to-r from-rose-500/10 via-transparent to-cyan-400/10" aria-hidden />
+        <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] items-center">
+          <div className="space-y-3 relative z-10">
+            <p className="text-sm uppercase tracking-[0.28em] text-rose-100">Unlock new worlds</p>
+            <h2 className="font-display text-3xl text-white sm:text-4xl">Buy premium racing maps</h2>
+            <p className="text-slate-200">Claim exclusive circuits engineered for holographic billboards, reactive lighting, and weather-adaptive grip. Each track is curated for cinematic race nights.</p>
+            <div className="flex flex-wrap gap-3 text-sm text-slate-100">
+              <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1">Premium circuits</span>
+              <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1">Dynamic FX</span>
+              <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1">Event-ready</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setFilter('premium')}
+                className="neon-button rounded-full bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-5 py-3 text-sm font-semibold text-white"
+              >
+                View premium tracks
+              </motion.button>
+              <span className="rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm text-white">Balance: {coins.toLocaleString()} c</span>
+            </div>
+          </div>
+          <div className="relative z-10 overflow-hidden rounded-2xl border border-white/10 bg-black/50">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/70" />
+            <img src={featuredMapImg} alt="Featured racing map" className="h-full w-full object-cover" />
+            <div className="absolute left-4 bottom-4 flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-white">
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
+                <path d="M12 2.5c-3.3 0-6 2.6-6 5.9 0 4.3 5.4 10.3 5.6 10.5.2.2.6.2.8 0 .2-.2 5.6-6.2 5.6-10.5 0-3.3-2.7-5.9-6-5.9Zm0 8.2c-1.3 0-2.4-1-2.4-2.3 0-1.3 1-2.3 2.4-2.3s2.4 1 2.4 2.3c0 1.3-1.1 2.3-2.4 2.3Z" />
+              </svg>
+              <span>Hyper Racing Map</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <GlowCard eyebrow="Filters" title="Browse maps" tone="info">
+        <GlowCard eyebrow="Filters" title="Curate your tracklist" tone="info">
           <div className="flex flex-wrap items-center gap-2">
             {[
               { key: 'all', label: 'All Maps' },
-              { key: 'owned', label: 'Owned' },
-              { key: 'locked', label: 'Locked' },
-              { key: 'premium', label: 'Premium' },
+              { key: 'premium', label: 'Premium Tracks' },
+              { key: 'owned', label: 'Owned Maps' },
+              { key: 'locked', label: 'Locked Maps' },
+              { key: 'urban', label: 'Urban Maps' },
+              { key: 'night', label: 'Night Tracks' },
+              { key: 'desert', label: 'Desert Tracks' },
+              { key: 'mountain', label: 'Mountain Routes' },
             ].map((item) => (
               <button
                 key={item.key}
@@ -137,12 +198,12 @@ export const MapStore = () => {
           </div>
         </GlowCard>
 
-        <GlowCard eyebrow="Owned" title="Purchased maps" tone="success">
-          <div className="flex flex-wrap gap-2 text-sm text-slate-200">
-            {ownedCount ? (
-              maps.map((map) => (
-                <span key={map.id} className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-white">
-                  {map.name}
+          <GlowCard eyebrow="Vault" title="Purchased maps" tone="success">
+            <div className="flex flex-wrap gap-2 text-sm text-slate-200">
+              {ownedCount ? (
+                maps.map((map) => (
+                  <span key={map.id} className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-white">
+                    {map.name}
                 </span>
               ))
             ) : (
@@ -171,15 +232,16 @@ export const MapStore = () => {
                 <div
                   role="button"
                   onClick={() => setActiveMap(pack)}
-                  className="relative h-40 cursor-pointer overflow-hidden rounded-xl"
+                  className="relative h-44 cursor-pointer overflow-hidden rounded-xl"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/20 to-transparent" />
                   <img src={pack.image} alt={pack.name} className="h-full w-full object-cover" />
-                  <div className="absolute left-3 top-3 flex items-center gap-2">
+                  <div className="absolute left-3 top-3 flex flex-wrap items-center gap-2">
                     <span className="rounded-full border border-white/20 bg-white/10 px-2 py-1 text-[11px] text-white">{pack.region}</span>
                     {pack.tier === 'Premium' ? (
                       <span className="rounded-full border border-amber-300/60 bg-amber-300/10 px-2 py-1 text-[11px] text-amber-100">Premium</span>
                     ) : null}
+                    <span className="rounded-full border border-white/20 bg-white/10 px-2 py-1 text-[11px] text-white">{pack.rarity}</span>
                   </div>
                 </div>
                 <div className="relative mt-3 flex items-start justify-between gap-3">
@@ -196,9 +258,9 @@ export const MapStore = () => {
                   whileTap={{ scale: 0.97 }}
                   disabled={owned || !affordable}
                   onClick={() => buy(pack)}
-                  className="neon-button relative mt-3 w-full rounded-xl bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {owned ? 'In rotation' : affordable ? 'Unlock map' : 'Insufficient coins'}
+                className="neon-button relative mt-3 w-full rounded-xl bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                  {owned ? 'In rotation' : affordable ? 'Unlock track' : 'Insufficient coins'}
                 </motion.button>
               </motion.div>
             )
