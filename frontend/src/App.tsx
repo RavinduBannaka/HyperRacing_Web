@@ -11,6 +11,15 @@ import { Categories } from './pages/Categories'
 import { Gallery as GalleryPage } from './pages/Gallery'
 import { About } from './pages/About'
 import { Contact } from './pages/Contact'
+import { Login } from './pages/Login'
+import { Register } from './pages/Register'
+import { Profile } from './pages/Profile'
+import { CoinStore } from './pages/CoinStore'
+import { SpinWheel } from './pages/SpinWheel'
+import { CommunityChat } from './pages/CommunityChat'
+import { CardStore } from './pages/CardStore'
+import { MapPage } from './pages/Map'
+import { Report } from './pages/Report'
 
 function App() {
   useEffect(() => {
@@ -43,6 +52,15 @@ function App() {
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/coin-store" element={<CoinStore />} />
+          <Route path="/spin" element={<SpinWheel />} />
+          <Route path="/community" element={<CommunityChat />} />
+          <Route path="/card-store" element={<CardStore />} />
+          <Route path="/map" element={<MapPage />} />
+          <Route path="/report" element={<Report />} />
         </Routes>
       </main>
       <Footer />
