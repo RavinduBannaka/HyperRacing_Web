@@ -6,15 +6,13 @@ import { useParallax } from '../hooks/useParallax'
 import { ParticleField } from './ParticleField'
 import { GamingLogo } from './GamingLogo'
 import { Link } from 'react-router-dom'
+import { HeroCarCanvas } from './HeroCarCanvas'
 
 const heroBackground =
   'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2400&q=80&sat=-12'
 
 const sprintClassCar =
   'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=2200&q=80&sat=-18'
-
-const circuitPreview =
-  'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1400&q=80&sat=-18'
 
 export const Hero = () => {
   const sectionRef = useRef<HTMLElement | null>(null)
@@ -89,20 +87,19 @@ export const Hero = () => {
               <GamingLogo className="h-6 w-10" />
               <span className="font-semibold text-white">HYPER RACING</span>
             </div>
-            <span className="hidden sm:inline text-slate-200/80">Premium racing division</span>
+            <span className="hidden sm:inline text-slate-200/80">Elite racing division</span>
           </motion.div>
 
-          <motion.h1 className="hero-title font-display text-4xl leading-[1.05] text-white drop-shadow-[0_10px_50px_rgba(255,46,64,0.45)] sm:text-5xl lg:text-6xl">
+          <motion.h1 className="hero-title font-display text-4xl leading-[1.04] text-white drop-shadow-[0_10px_50px_rgba(255,46,64,0.45)] sm:text-5xl lg:text-6xl">
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-400 to-slate-200">
-              Engineered for pure velocity.
+              HYPER RACING
             </span>
-            <span className="mt-2 block text-slate-200">Cinematic hypercars. Aggressive aerodynamics. Built to win.</span>
-            <span className="block text-slate-400">Scroll to ride the circuit and feel the downforce kick in.</span>
+            <span className="mt-2 block text-slate-200">Carbon-sculpted hypercars. Cinematic light. Built to overtake.</span>
           </motion.h1>
 
           <motion.p className="hero-sub max-w-2xl text-lg text-slate-300 sm:text-xl">
-            HYPER RACING is a premium motorsport universe—crafted for speed purists, cinematic visuals, and track-proven
-            engineering. Every pixel tuned for adrenaline.
+            A premium racing universe tuned for velocity purists—wind-tunnel aero, telemetry-grade visuals, and
+            championship-ready cockpit feel in every interaction.
           </motion.p>
 
           <div className="hero-cta flex flex-wrap gap-4">
@@ -150,45 +147,51 @@ export const Hero = () => {
           whileHover={{ boxShadow: '0 0 40px rgba(255, 46, 64, 0.38)' }}
         >
           <div className="absolute inset-0 bg-animated opacity-70" />
-          <div className="relative z-10 flex items-start justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-rose-100">Flagship Hypercar</p>
-              <p className="text-2xl font-semibold text-white">VX-09 Tempest</p>
-              <p className="mt-1 text-sm text-slate-300">Carbon weave chassis · Twin-turbo V8 · Active aero</p>
-            </div>
-            <div className="rounded-full border border-rose-300/60 bg-rose-300/10 px-4 py-2 text-sm font-semibold text-rose-100 shadow-neon">
-              Track ready
-            </div>
-          </div>
-
-          <div className="relative mt-6 overflow-hidden rounded-2xl border border-white/10 bg-black/40">
-            <div
-              className="h-[320px] bg-cover bg-center opacity-95"
-              style={{ backgroundImage: `url(${sprintClassCar})` }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black" />
-            <div className="absolute inset-0" aria-hidden>
-              <div className="absolute -left-10 top-10 h-32 w-32 rounded-full glow-ring" />
-            </div>
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-slate-100">
+          <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 via-transparent to-orange-400/5" />
+          <div className="relative z-10 space-y-4">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-rose-100">Boost</p>
-                <p className="font-semibold text-white">Launch Control Armed</p>
+                <p className="text-xs uppercase tracking-[0.28em] text-rose-100">Immersive Garage</p>
+                <p className="text-2xl font-semibold text-white">VX-09 Tempest · HYPER</p>
+                <p className="mt-1 text-sm text-slate-300">Live orbit view · Cinematic lighting · Interactive aero sweep</p>
               </div>
-              <div className="flex items-center gap-2 text-rose-100">
-                <span className="h-2 w-2 rounded-full bg-rose-400 animate-pulsefast" />
-                DRS Synced
+              <div className="rounded-full border border-rose-300/60 bg-rose-300/10 px-4 py-2 text-sm font-semibold text-rose-100 shadow-neon">
+                Drag to rotate
               </div>
             </div>
-          </div>
-          <div className="mt-4 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-            <div
-              className="h-16 w-24 rounded-xl bg-cover bg-center shadow-neon"
-              style={{ backgroundImage: `url(${circuitPreview})` }}
-            />
-            <div className="space-y-1">
-              <p className="text-xs uppercase tracking-[0.2em] text-rose-100">Cinematic circuit preview</p>
-              <p className="text-sm text-slate-200">Follow the illuminated racing line and dive into apex-perfect laps.</p>
+
+            <div className="hidden sm:block">
+              <HeroCarCanvas />
+            </div>
+            <div className="sm:hidden relative overflow-hidden rounded-2xl border border-white/10 bg-black/50">
+              <div
+                className="h-[280px] bg-cover bg-center opacity-95"
+                style={{ backgroundImage: `url(${sprintClassCar})` }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black" />
+              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-slate-100">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-rose-100">Mobile preview</p>
+                  <p className="font-semibold text-white">Static render for speed</p>
+                </div>
+                <div className="flex items-center gap-2 text-rose-100">
+                  <span className="h-2 w-2 rounded-full bg-rose-400 animate-pulsefast" />
+                  3D on desktop
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {[
+                { label: 'Powertrain', value: 'Hybrid V8 · 1,050 hp' },
+                { label: 'Downforce package', value: 'Active aero + DRS' },
+                { label: 'Render mode', value: 'Cinematic • Neon garage' },
+              ].map((item) => (
+                <div key={item.label} className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                  <p className="text-xs uppercase tracking-[0.2em] text-rose-100">{item.label}</p>
+                  <p className="mt-1 text-sm text-slate-200">{item.value}</p>
+                </div>
+              ))}
             </div>
           </div>
         </motion.div>
