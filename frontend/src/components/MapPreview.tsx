@@ -1,11 +1,9 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import mapCarImg from '../assets/hero.png'
 
 const mapBg =
   'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=2000&q=80&sat=-14'
-
-const bannerImg =
-  'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1600&q=80&sat=-14'
 
 const markers = [
   {
@@ -61,14 +59,20 @@ export const MapPreview = () => {
             <p className="max-w-2xl text-slate-300">Preview live hotspots, events, and garages before diving into the full map experience.</p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="overflow-hidden rounded-2xl border border-white/15 bg-white/5 shadow-glow">
+            <Link
+              to="/map"
+              className="group overflow-hidden rounded-2xl border border-white/15 bg-white/5 shadow-glow transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/60"
+              aria-label="Open full Hyper Racing map"
+            >
               <div
-                className="h-20 w-32 bg-cover bg-center"
-                style={{ backgroundImage: `url(${bannerImg})` }}
-                aria-label="HYPER RACING MAP"
+                className="h-20 w-32 bg-cover bg-center transition duration-500 group-hover:scale-[1.05]"
+                style={{ backgroundImage: `url(${mapCarImg})` }}
               />
-              <div className="px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-rose-100">Hyper Racing Map</div>
-            </div>
+              <div className="flex items-center justify-between px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-rose-100">
+                <span>Hyper Racing Map</span>
+                <span className="text-white/80">↗</span>
+              </div>
+            </Link>
             <Link
               to="/map"
               className="neon-button inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white"
