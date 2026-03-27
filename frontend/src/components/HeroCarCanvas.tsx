@@ -1,14 +1,22 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import React, { Component, Suspense, useEffect, useMemo, useRef, useState } from 'react'
-import { ContactShadows, Environment, OrbitControls, Stage, useGLTF, useProgress } from '@react-three/drei'
+import {
+  ContactShadows,
+  Environment,
+  MeshReflectorMaterial,
+  OrbitControls,
+  Stage,
+  useGLTF,
+  useProgress,
+} from '@react-three/drei'
 import * as THREE from 'three'
 
-const LOCAL_MODEL_URL = '/models/hyper-hypercar.glb'
+const LOCAL_MODEL_URL = '/models/hyper-racer.glb'
 const REMOTE_MODEL_URL =
-  'https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/mercedes-amg-one/model.gltf'
+  'https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/f1-car/model.gltf'
 
 const fallbackStill =
-  'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1600&q=80&sat=-12'
+  'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1800&q=80&sat=-10'
 
 type CarModelProps = {
   autoRotate: boolean
@@ -82,7 +90,7 @@ const CarModel = ({ autoRotate }: CarModelProps) => {
     })
   }, [scene])
 
-  const baseScale = useMemo(() => 1.4, [])
+  const baseScale = useMemo(() => 1.1, [])
 
   useFrame((_state: any, delta: number) => {
     if (autoRotate && group.current) {
@@ -90,7 +98,7 @@ const CarModel = ({ autoRotate }: CarModelProps) => {
     }
   })
 
-  return <primitive ref={group} object={scene} scale={baseScale} />
+  return <primitive ref={group} object={scene} scale={baseScale} position={[0, -0.28, 0]} />
 }
 
 const LoadingGradient = () => {
@@ -141,59 +149,66 @@ export const HeroCarCanvas = () => {
   }
 
   return (
-    <div className="relative h-[420px] sm:h-[480px] overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 via-white/0 to-white/5 shadow-neon">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,72,92,0.25),transparent_45%),radial-gradient(circle_at_80%_10%,rgba(255,255,255,0.08),transparent_35%)]" />
+    <div className="relative h-[440px] sm:h-[520px] overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-[#0a0c14] via-[#08070f] to-[#12060d] shadow-neon">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_24%,rgba(255,72,92,0.22),transparent_42%),radial-gradient(circle_at_85%_18%,rgba(120,190,255,0.18),transparent_32%),radial-gradient(circle_at_50%_80%,rgba(255,255,255,0.05),transparent_30%)]" />
+      <div className="pointer-events-none absolute inset-0 grid-veil" />
 
       <CanvasErrorBoundary fallback={<HeroCarFallback reason="Model failed to load. Showing static render." />}>
         <Suspense fallback={<LoadingGradient />}>
           <Canvas
             shadows
-            dpr={[1, 1.5]}
-            camera={{ position: [4.2, 2.6, 5.2], fov: 38 }}
+            dpr={[1, 1.6]}
+            camera={{ position: [4.6, 2.8, 5.4], fov: 36 }}
             className="relative"
           >
-            <color attach="background" args={[`#06060a`]} />
+            <color attach="background" args={[`#04050a`]} />
 
-            <Stage
-              intensity={1.2}
-              environment={undefined}
-              adjustCamera={false}
-              shadows={false}
-              preset="rembrandt"
-            >
+            <Stage intensity={1.15} environment={undefined} adjustCamera={false} shadows={false} preset="rembrandt">
               <CarModel autoRotate={!isInteracting} />
             </Stage>
 
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.92, 0]}>
+              <planeGeometry args={[24, 24]} />
+              <MeshReflectorMaterial
+                mirror={0.9}
+                blur={[320, 60]}
+                mixBlur={0.6}
+                mixStrength={12}
+                depthScale={1}
+                minDepthThreshold={0.25}
+                maxDepthThreshold={1.25}
+                roughness={0.35}
+                metalness={0.9}
+                color="#0a0c14"
+              />
+            </mesh>
+
             <spotLight
-              position={[5, 8, 4]}
-              angle={0.6}
-              penumbra={0.4}
-              intensity={1.4}
-              color="#ff4b5c"
+              position={[6, 9, 5]}
+              angle={0.55}
+              penumbra={0.32}
+              intensity={1.55}
+              color="#ff4b6b"
               castShadow
               shadow-mapSize-width={2048}
               shadow-mapSize-height={2048}
             />
-            <spotLight position={[-6, 6, -2]} angle={0.7} penumbra={0.4} intensity={0.9} color="#7dd5ff" />
-            <directionalLight position={[0, 3, 5]} intensity={0.6} color="#ffffff" />
+            <spotLight position={[-7, 7, -3]} angle={0.7} penumbra={0.35} intensity={1.1} color="#7fd7ff" />
+            <directionalLight position={[0.6, 4, 4.8]} intensity={0.7} color="#ffffff" />
+            <ambientLight intensity={0.38} color="#c4d4ff" />
 
             <Environment preset="city" />
 
-            <ContactShadows
-              position={[0, -0.8, 0]}
-              opacity={0.5}
-              scale={12}
-              blur={2.8}
-              far={8}
-            />
+            <ContactShadows position={[0, -0.9, 0]} opacity={0.45} scale={10} blur={2.6} far={8} />
 
             <OrbitControls
               enableZoom={false}
               enablePan={false}
-              minPolarAngle={Math.PI / 3}
-              maxPolarAngle={(Math.PI / 2) * 1.05}
+              minPolarAngle={(Math.PI / 2) * 0.42}
+              maxPolarAngle={(Math.PI / 2) * 0.95}
               autoRotate={false}
-              rotateSpeed={0.65}
+              rotateSpeed={0.8}
+              target={[0, 0, 0]}
               onStart={() => setIsInteracting(true)}
               onEnd={() => setIsInteracting(false)}
             />
@@ -201,8 +216,8 @@ export const HeroCarCanvas = () => {
         </Suspense>
       </CanvasErrorBoundary>
 
-      <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-white/10" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 rounded-[30px] ring-1 ring-white/10" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
     </div>
   )
 }
