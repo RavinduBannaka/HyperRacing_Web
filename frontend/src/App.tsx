@@ -21,6 +21,7 @@ import { CardStore } from './pages/CardStore'
 import { MapPage } from './pages/Map'
 import { MapStore } from './pages/MapStore'
 import { Report } from './pages/Report'
+import RacingMap from './pages/RacingMap'
 
 function App() {
   useEffect(() => {
@@ -63,6 +64,7 @@ function App() {
           <Route path="/map" element={<MapPage />} />
           <Route path="/map-store" element={<MapStore />} />
           <Route path="/report" element={<Report />} />
+          <Route path="/racing-map" element={<RacingMap />} />
         </Routes>
       </main>
       <Footer />

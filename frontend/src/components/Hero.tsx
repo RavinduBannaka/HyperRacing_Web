@@ -62,9 +62,13 @@ export const Hero = () => {
         <div
           ref={backgroundRef}
           className="absolute -inset-12 scale-[1.04] bg-black"
-          style={{ backgroundImage: `url(${heroPoster})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+          style={
+            videoFailed
+              ? { backgroundImage: `url(${heroPoster})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+              : undefined
+          }
         >
-          {!videoFailed && (
+          {!videoFailed ? (
             <video
               className="h-full w-full object-cover"
               autoPlay
@@ -78,11 +82,15 @@ export const Hero = () => {
             >
               <source src={heroVideo} type="video/mp4" />
             </video>
+          ) : (
+            <div className="h-full w-full bg-gradient-to-br from-slate-900 via-black to-slate-950" />
           )}
+
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/65 via-black/72 to-black/90" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/45" />
         </div>
         <div className="speed-lines" />
         <div className="hyper-grid absolute inset-0" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/78 to-black" />
         <div className="absolute top-10 right-10 w-64 h-64 rounded-full glow-ring" />
         <div className="absolute inset-0 hero-aurora" />
       </div>
@@ -117,12 +125,12 @@ export const Hero = () => {
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-white to-blue-200">
                 HYPER RACING
               </span>
-              <span className="mt-2 block text-slate-100">Nightstage championship garage tuned for apex drivers.</span>
-              <span className="block text-slate-200/90">Cinematic visuals, telemetry-rich data, and precision aero control.</span>
+              <span className="mt-2 block text-slate-100">Command the apex. Own the night.</span>
+              <span className="block text-slate-200/90">Cinematic garage built for elite drivers, live telemetry, and premium control.</span>
             </motion.h1>
 
             <motion.p className="hero-sub max-w-2xl text-lg text-slate-200/90 sm:text-xl">
-              Experience our flagship hypercar in a premium, responsive showroom with neon-grade lighting and live telemetry stitched into every pixel.
+              Your uploaded hero film now powers the banner—delivering a premium racing atmosphere with responsive motion, neon depth, and razor-sharp detail.
             </motion.p>
 
             <div className="hero-cta flex flex-wrap items-center gap-3">

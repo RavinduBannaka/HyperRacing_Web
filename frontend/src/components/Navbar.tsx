@@ -7,6 +7,7 @@ const navItems = [
   { label: 'Cars', to: '/cars' },
   { label: 'Categories', to: '/categories' },
   { label: 'Gallery', to: '/gallery' },
+  { label: 'Racing Map', to: '/racing-map' },
   { label: 'Card Store', to: '/card-store' },
   { label: 'Spin', to: '/spin' },
   { label: 'Profile', to: '/profile' },
