@@ -13,6 +13,7 @@ import { About } from './pages/About'
 import { Contact } from './pages/Contact'
 import { Login } from './pages/Login'
 import { Register } from './pages/Register'
+import { AuthDashboard } from './pages/AuthDashboard'
 import { Profile } from './pages/Profile'
 import { CoinStore } from './pages/CoinStore'
 import { SpinWheel } from './pages/SpinWheel'
@@ -22,6 +23,7 @@ import { MapPage } from './pages/Map'
 import { MapStore } from './pages/MapStore'
 import { Report } from './pages/Report'
 import RacingMap from './pages/RacingMap'
+import { ApiDemo } from './pages/ApiDemo'
 
 function App() {
   useEffect(() => {
@@ -56,6 +58,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/auth" element={<AuthDashboard />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/coin-store" element={<CoinStore />} />
           <Route path="/spin" element={<SpinWheel />} />
@@ -65,6 +68,7 @@ function App() {
           <Route path="/map-store" element={<MapStore />} />
           <Route path="/report" element={<Report />} />
           <Route path="/racing-map" element={<RacingMap />} />
+          <Route path="/api-demo" element={<ApiDemo />} />
         </Routes>
       </main>
       <Footer />

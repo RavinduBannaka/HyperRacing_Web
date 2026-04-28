@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { motion, useAnimation } from 'framer-motion'
 import { PageShell } from '../components/PageShell'
 import { GlowCard } from '../components/GlowCard'
+import { SelectionSpinnerWithColors } from '../components/SelectionSpinnerWithColors'
 import { useGame } from '../context/GameContext'
 
 const spinBg =
@@ -21,13 +22,20 @@ export const SpinWheel = () => {
   const controls = useAnimation()
   const [spinning, setSpinning] = useState(false)
   const [result, setResult] = useState<string>('')
+  const [selectedCoin, setSelectedCoin] = useState<string>('nitro')
+  const [selectedColor, setSelectedColor] = useState<string>('Flame')
+
+  const handleSpinnerSelect = (coinId: string, colorName: string) => {
+    setSelectedCoin(coinId)
+    setSelectedColor(colorName)
+  }
 
   const spin = async () => {
     if (spinning) return
     setSpinning(true)
     await controls.start({ rotate: 1440 + Math.random() * 360, transition: { duration: 2.4, ease: 'easeInOut' } })
     const outcome = spinWheel()
-    setResult(outcome.reward)
+    setResult(`${outcome.reward} (${selectedCoin} - ${selectedColor})`)
     setSpinning(false)
   }
 
@@ -40,6 +48,17 @@ export const SpinWheel = () => {
       subtitle="Spend coins to spin a neon wheel packed with coins, rare wraps, and premium cards."
       backgroundImage={spinBg}
     >
+      {/* Coin Selection Spinner */}
+      <div className="mb-8">
+        <GlowCard eyebrow="Power" title="" tone="info">
+          <div className="relative h-[400px] w-full overflow-hidden rounded-2xl">
+            <SelectionSpinnerWithColors
+              selectedCoinId={selectedCoin}
+              onSelect={handleSpinnerSelect}
+            />
+          </div>
+        </GlowCard>
+      </div>
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <GlowCard eyebrow="Balance" title="Coin reserve" tone="info">
           <div className="flex items-center justify-between text-3xl font-semibold text-white">
@@ -101,7 +120,14 @@ export const SpinWheel = () => {
           >
             {spinning ? 'Spinning…' : 'Spin now'}
           </motion.button>
-          {result ? <p className="text-sm text-emerald-200">Result: {result}</p> : null}
+          {result ? (
+            <div className="text-center space-y-1">
+              <p className="text-sm text-emerald-200">Result: {result}</p>
+              <p className="text-xs text-slate-300">
+                Boost: <span className="font-semibold text-rose-200">{selectedCoin} - {selectedColor}</span>
+              </p>
+            </div>
+          ) : null}
         </div>
 
         <GlowCard eyebrow="Rewards" title="Possible drops" tone="default">

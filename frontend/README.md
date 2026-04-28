@@ -71,3 +71,14 @@ export default defineConfig([
   },
 ])
 ```
+
+## AppWire Auth Setup
+
+To connect login and registration to AppWire, create a `.env` at the project root with the following variables:
+
+```env
+VITE_APPWIRE_PROJECT_ID=your-appwire-project-id
+VITE_APPWIRE_ENDPOINT=https://your-appwire-endpoint
+```
+
+Use `src/services/appwireAuth.ts` to manage requests and `src/pages/AuthDashboard.tsx` for the combined login/register dashboard. The dashboard route is `/auth`.

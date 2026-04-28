@@ -153,7 +153,7 @@ export const MapPage = () => {
                 return (
                   <motion.div
                     key={marker.id}
-                    className="group absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+                    className="group absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center"
                     style={{ left: marker.x, top: marker.y }}
                     initial={{ scale: 0.9, opacity: 0.8 }}
                     animate={{ scale: isActive ? 1.1 : 1, opacity: 1 }}

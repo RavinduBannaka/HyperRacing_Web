@@ -16,15 +16,19 @@ export const Login = () => {
   const qrUrl =
     'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fhyperracing.app%2Flogin%2Fqr'
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || !password) {
       setError('Enter your credentials to connect to the grid.')
       return
     }
     setError('')
-    login(email, password)
-    navigate('/profile')
+    try {
+      await login(email, password)
+      navigate('/profile')
+    } catch (err) {
+      setError((err as Error).message || 'Login failed. Please try again.')
+    }
   }
 
   return (

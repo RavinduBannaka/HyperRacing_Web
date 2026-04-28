@@ -20,7 +20,7 @@ export const Register = () => {
   })
   const [error, setError] = useState('')
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.displayName || !form.email || !form.password || !form.confirm || !form.age) {
       setError('Complete all fields to register your driver profile.')
@@ -31,14 +31,18 @@ export const Register = () => {
       return
     }
     setError('')
-    register({
-      displayName: form.displayName,
-      age: Number(form.age),
-      bio: form.bio || 'New racer joining the Hyper grid.',
-      email: form.email,
-      password: form.password,
-    })
-    navigate('/profile')
+    try {
+      await register({
+        displayName: form.displayName,
+        age: Number(form.age),
+        bio: form.bio || 'New racer joining the Hyper grid.',
+        email: form.email,
+        password: form.password,
+      })
+      navigate('/profile')
+    } catch (err) {
+      setError((err as Error).message || 'Registration failed. Please try again.')
+    }
   }
 
   const update = (key: keyof typeof form, value: string) => setForm((f) => ({ ...f, [key]: value }))

@@ -95,7 +95,7 @@ export const MapPreview = () => {
             {markers.map((marker) => (
               <motion.div
                 key={marker.id}
-                className="group absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+                className="group absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center"
                 style={{ left: marker.x, top: marker.y }}
                 initial={{ scale: 0.9, opacity: 0.85 }}
                 whileHover={{ scale: 1.08 }}

@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
+import { isAppwireConfigured, loginWithAppwire, registerWithAppwire } from '../services/appwireAuth'
 
 type UserProfile = {
   displayName: string
@@ -68,8 +69,8 @@ type GameContextShape = {
   messages: Message[]
   transactions: Transaction[]
   spins: SpinResult[]
-  login: (email: string, password: string) => void
-  register: (data: { displayName: string; age: number; bio: string; email: string; password: string }) => void
+  login: (email: string, password: string) => Promise<void>
+  register: (data: { displayName: string; age: number; bio: string; email: string; password: string }) => Promise<void>
   updateProfile: (payload: Partial<UserProfile>) => void
   purchaseCoins: (amount: number, label: string) => void
   buyCard: (card: Card) => void
@@ -144,6 +145,20 @@ const defaultUser: UserProfile = {
   },
 }
 
+const normalizeUser = (user: Partial<UserProfile>): UserProfile => ({
+  displayName: user.displayName ?? user.email?.split('@')[0] ?? 'Hyper Racer',
+  age: user.age ?? 18,
+  bio: user.bio ?? 'New Hyper Racing pilot.',
+  email: user.email ?? defaultUser.email,
+  avatar: user.avatar ?? defaultUser.avatar,
+  stats: {
+    races: user.stats?.races ?? 0,
+    wins: user.stats?.wins ?? 0,
+    spins: user.stats?.spins ?? 0,
+    cards: user.stats?.cards ?? 0,
+  },
+})
+
 const defaultMessages: Message[] = [
   {
     id: 'm-1',
@@ -172,6 +187,7 @@ const GameContext = createContext<GameContextShape | null>(null)
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProfile>(defaultUser)
+  const [authToken, setAuthToken] = useState<string | null>(null)
   const [coins, setCoins] = useState(2400)
   const [inventory, setInventory] = useState<Card[]>(starterCards.slice(0, 2))
   const [maps, setMaps] = useState<MapPack[]>(starterMaps)
@@ -186,12 +202,32 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     { id: 's-2', reward: 'Rare card skin', coins: 0, rarity: 'Rare', timestamp: now() },
   ])
 
-  const login = (email: string, password: string) => {
+  const login = async (email: string, password: string) => {
+    if (isAppwireConfigured()) {
+      const result = await loginWithAppwire(email, password)
+      if (!result.user) {
+        throw new Error(result.message || 'Login failed. Please verify your credentials.')
+      }
+      setAuthToken(result.token ?? null)
+      setUser((prev) => ({ ...prev, ...normalizeUser(result.user) }))
+      return
+    }
+
     void password
     setUser((prev) => ({ ...prev, email }))
   }
 
-  const register = (data: { displayName: string; age: number; bio: string; email: string; password: string }) => {
+  const register = async (data: { displayName: string; age: number; bio: string; email: string; password: string }) => {
+    if (isAppwireConfigured()) {
+      const result = await registerWithAppwire(data)
+      if (!result.user) {
+        throw new Error(result.message || 'Registration failed. Please try again.')
+      }
+      setAuthToken(result.token ?? null)
+      setUser((prev) => ({ ...prev, ...normalizeUser(result.user) }))
+      return
+    }
+
     void data.password
     setUser((prev) => ({ ...prev, ...data }))
   }
