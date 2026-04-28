@@ -23,11 +23,11 @@ export const Login = () => {
       setError('Enter your credentials to connect to the grid.')
       return
     }
-    setError('')
-    setLoading(true)
-    try {
-      await login(email, password)
-      navigate('/profile')
+      setError('')
+      setLoading(true)
+      try {
+        await login(email, password)
+      navigate('/auth')
     } catch (err) {
       setError((err as Error).message || 'Login failed. Please try again.')
     } finally {

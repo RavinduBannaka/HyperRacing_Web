@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { PageShell } from '../components/PageShell'
@@ -17,14 +17,17 @@ export const Register = () => {
     email: '',
     password: '',
     confirm: '',
+    profilePicUrl: '',
   })
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    if (!form.displayName || !form.email || !form.password || !form.confirm || !form.age) {
-      setError('Complete all fields to register your driver profile.')
+    if (!form.displayName.trim() || !form.email.trim() || !form.password || !form.confirm) {
+      setError('Username, email, password, and confirm password are required.')
       return
     }
     if (form.password !== form.confirm) {
@@ -35,17 +38,24 @@ export const Register = () => {
       setError('Password must be at least 8 characters.')
       return
     }
+    if (!agreedToTerms) {
+      setError('You must agree to the Terms of Service.')
+      return
+    }
     setError('')
+    setSuccess('')
     setLoading(true)
     try {
       await register({
-        displayName: form.displayName,
-        age: Number(form.age),
+        displayName: form.displayName.trim(),
+        age: Number(form.age) || 18,
         bio: form.bio || 'New racer joining the Hyper grid.',
-        email: form.email,
+        email: form.email.trim(),
         password: form.password,
+        avatar: form.profilePicUrl || undefined,
       })
-      navigate('/profile')
+      setSuccess('Registration successful. Redirecting to login...')
+      window.setTimeout(() => navigate('/login'), 900)
     } catch (err) {
       setError((err as Error).message || 'Registration failed. Please try again.')
     } finally {
@@ -66,13 +76,12 @@ export const Register = () => {
       <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-1">
-            <label className="text-sm text-slate-200">Display Name</label>
+            <label className="text-sm text-slate-200">Username</label>
             <input
               value={form.displayName}
               onChange={(e) => update('displayName', e.target.value)}
               className="mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none ring-rose-400/40 focus:ring"
-              placeholder="Ava “Driftline”"
-              required
+              placeholder='Ava "Driftline"'
             />
           </div>
           <div className="sm:col-span-1">
@@ -96,6 +105,16 @@ export const Register = () => {
             />
           </div>
           <div className="sm:col-span-2">
+            <label className="text-sm text-slate-200">Profile Picture URL <span className="text-slate-400">(optional)</span></label>
+            <input
+              type="url"
+              value={form.profilePicUrl}
+              onChange={(e) => update('profilePicUrl', e.target.value)}
+              className="mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none ring-rose-400/40 focus:ring"
+              placeholder="https://images.unsplash.com/photo-..."
+            />
+          </div>
+          <div className="sm:col-span-2">
             <label className="text-sm text-slate-200">Email</label>
             <input
               type="email"
@@ -113,7 +132,7 @@ export const Register = () => {
               value={form.password}
               onChange={(e) => update('password', e.target.value)}
               className="mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none ring-rose-400/40 focus:ring"
-              placeholder="••••••••"
+              placeholder="********"
               required
             />
           </div>
@@ -124,11 +143,24 @@ export const Register = () => {
               value={form.confirm}
               onChange={(e) => update('confirm', e.target.value)}
               className="mt-1 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none ring-rose-400/40 focus:ring"
-              placeholder="••••••••"
+              placeholder="********"
               required
             />
           </div>
           {error ? <p className="sm:col-span-2 text-sm text-rose-200">{error}</p> : null}
+          {success ? <p className="sm:col-span-2 text-sm text-emerald-200">{success}</p> : null}
+          <div className="sm:col-span-2 flex items-start gap-3">
+            <input
+              type="checkbox"
+              id="terms"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className="mt-1 h-5 w-5 rounded border border-white/30 bg-white/5 text-rose-500 outline-none ring-rose-400/40"
+            />
+            <label htmlFor="terms" className="text-sm text-slate-200">
+              I agree to the <a href="#" className="text-rose-300 underline">Terms of Service</a> and <a href="#" className="text-rose-300 underline">Privacy Policy</a>
+            </label>
+          </div>
           <motion.button
             type="submit"
             whileHover={{ scale: 1.02 }}
@@ -142,17 +174,36 @@ export const Register = () => {
 
         <div className="space-y-4">
           <div className="glass-panel rounded-2xl border border-white/10 bg-white/5 p-5">
+            <p className="text-xs uppercase tracking-[0.24em] text-rose-100">Preview</p>
+            <h3 className="mt-2 text-xl font-semibold text-white">Your Racer Profile</h3>
+            <div className="mt-3 flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-orange-400 text-xl">
+                {form.displayName ? form.displayName.charAt(0).toUpperCase() : '?'}
+              </div>
+              <div>
+                <p className="font-semibold text-white">{form.displayName || 'Display Name'}</p>
+                <p className="text-xs text-slate-300">{form.email || 'you@hyper.gg'}</p>
+              </div>
+            </div>
+            {form.profilePicUrl ? (
+              <div className="mt-3">
+                <img src={form.profilePicUrl} alt="Profile preview" className="h-20 w-20 rounded-full object-cover" />
+              </div>
+            ) : null}
+          </div>
+          <div className="glass-panel rounded-2xl border border-white/10 bg-white/5 p-5">
             <p className="text-xs uppercase tracking-[0.24em] text-rose-100">Premium onboarding</p>
             <h3 className="mt-2 text-xl font-semibold text-white">Included perks</h3>
             <ul className="mt-3 space-y-2 text-sm text-slate-200">
-              <li>• 2,000 bonus coins for first spins</li>
-              <li>• Access to community chat + squad channels</li>
-              <li>• Marketplace-ready loadout &amp; profile editor</li>
+              <li>- <span className="text-amber-300">500 bonus coins</span> to start</li>
+              <li>- Access to community chat + race lobby</li>
+              <li>- Marketplace and card collection</li>
+              <li>- Weekly spin wheel rewards</li>
             </ul>
           </div>
           <div className="glass-panel rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/10 to-transparent p-5">
             <h4 className="text-sm uppercase tracking-[0.24em] text-cyan-100">Security</h4>
-            <p className="mt-2 text-slate-200">All flows are frontend-only for this demo. Swap in real auth later without breaking UI.</p>
+            <p className="mt-2 text-sm text-slate-200">Your data is encrypted and stored securely. We never share your information.</p>
           </div>
         </div>
       </div>

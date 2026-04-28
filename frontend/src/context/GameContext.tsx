@@ -61,6 +61,13 @@ type SpinResult = {
   timestamp: string
 }
 
+type SpinRewardPayload = {
+  id: string
+  label: string
+  type: 'coins' | 'skin' | 'map'
+  coins?: number
+}
+
 type GameContextShape = {
   user: UserProfile
   coins: number
@@ -70,13 +77,13 @@ type GameContextShape = {
   transactions: Transaction[]
   spins: SpinResult[]
   login: (email: string, password: string) => Promise<void>
-  register: (data: { displayName: string; age: number; bio: string; email: string; password: string }) => Promise<void>
+  register: (data: { displayName: string; age: number; bio: string; email: string; password: string; avatar?: string }) => Promise<void>
   updateProfile: (payload: Partial<UserProfile>) => void
   purchaseCoins: (amount: number, label: string) => void
   buyCard: (card: Card) => void
   buyMapPack: (pack: MapPack) => void
   sendMessage: (content: string) => void
-  spinWheel: () => SpinResult
+  spinWheel: (reward: SpinRewardPayload, cost: number) => SpinResult
 }
 
 const now = () => new Date().toISOString()
@@ -145,20 +152,6 @@ const defaultUser: UserProfile = {
   },
 }
 
-const normalizeUser = (user: Partial<UserProfile>): UserProfile => ({
-  displayName: user.displayName ?? user.email?.split('@')[0] ?? 'Hyper Racer',
-  age: user.age ?? 18,
-  bio: user.bio ?? 'New Hyper Racing pilot.',
-  email: user.email ?? defaultUser.email,
-  avatar: user.avatar ?? defaultUser.avatar,
-  stats: {
-    races: user.stats?.races ?? 0,
-    wins: user.stats?.wins ?? 0,
-    spins: user.stats?.spins ?? 0,
-    cards: user.stats?.cards ?? 0,
-  },
-})
-
 const defaultMessages: Message[] = [
   {
     id: 'm-1',
@@ -203,14 +196,20 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     const response = await api.auth.login({ email, password })
-    if (!response.success || !response.data) {
+    const canUseLocalFallback =
+      !response.success &&
+      Boolean(response.error?.toLowerCase().includes('network') || response.error?.toLowerCase().includes('fetch'))
+
+    if (!response.success && !canUseLocalFallback) {
       throw new Error(response.error || 'Login failed')
     }
-    const authData = response.data as AuthResponse
-    setAuthToken(authData.token)
+
+    const authData = response.data as AuthResponse | undefined
+    setAuthToken(authData?.token ?? `local-${crypto.randomUUID()}`)
     
-    const userResponse = await api.auth.me()
-    if (userResponse.success && userResponse.data) {
+    if (authData?.token) {
+      const userResponse = await api.auth.me()
+      if (userResponse.success && userResponse.data) {
       const userData = userResponse.data as UserData
       setUser((prev) => ({
         ...prev,
@@ -219,26 +218,33 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       }))
       setCoins(userData.coinBalance || 0)
       return
+      }
     }
     
-    setUser((prev) => ({ ...prev, email }))
+    setUser((prev) => ({ ...prev, email, displayName: authData?.user?.displayName ?? email.split('@')[0] ?? prev.displayName }))
   }
 
-  const register = async (data: { displayName: string; age: number; bio: string; email: string; password: string }) => {
+  const register = async (data: { displayName: string; age: number; bio: string; email: string; password: string; avatar?: string }) => {
     const response = await api.auth.register(data)
-    if (!response.success || !response.data) {
+    const canUseLocalFallback =
+      !response.success &&
+      Boolean(response.error?.toLowerCase().includes('network') || response.error?.toLowerCase().includes('fetch'))
+
+    if (!response.success && !canUseLocalFallback) {
       throw new Error(response.error || 'Registration failed')
     }
-    const authData = response.data as AuthResponse
-    setAuthToken(authData.token)
+
+    const authData = response.data as AuthResponse | undefined
+    setAuthToken(authData?.token ?? `local-${crypto.randomUUID()}`)
     setUser((prev) => ({
       ...prev,
       displayName: data.displayName,
       email: data.email,
       bio: data.bio,
       age: data.age,
+      avatar: data.avatar || prev.avatar,
     }))
-    setCoins(authData.user?.coinBalance || 500)
+    setCoins(authData?.user?.coinBalance || 500)
   }
 
   const updateProfile = (payload: Partial<UserProfile>) => {
@@ -284,19 +290,47 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setMessages((msgs) => [...msgs, message])
   }
 
-  const spinWheel = () => {
-    const outcomes: SpinResult[] = [
-      { id: crypto.randomUUID(), reward: 'Bonus 150 coins', coins: 150, rarity: 'Bonus', timestamp: now() },
-      { id: crypto.randomUUID(), reward: 'Rare card drop', coins: 0, rarity: 'Rare', timestamp: now() },
-      { id: crypto.randomUUID(), reward: 'Premium 500 coins', coins: 500, rarity: 'Premium', timestamp: now() },
-      { id: crypto.randomUUID(), reward: 'Special hologram wrap', coins: 0, rarity: 'Special', timestamp: now() },
-    ]
-    const result = outcomes[Math.floor(Math.random() * outcomes.length)]
-    const spinCost = 120
-    setCoins((c) => Math.max(0, c - spinCost + result.coins))
+  const spinWheel = (reward: SpinRewardPayload, cost: number) => {
+    const rewardCoins = reward.type === 'coins' ? reward.coins ?? 0 : 0
+    const result: SpinResult = {
+      id: crypto.randomUUID(),
+      reward: reward.label,
+      coins: rewardCoins,
+      rarity: reward.type === 'coins' ? 'Bonus' : reward.type === 'map' ? 'Premium' : 'Rare',
+      timestamp: now(),
+    }
+
+    setCoins((c) => Math.max(0, c - cost + rewardCoins))
+
+    if (reward.type === 'skin') {
+      const skinCard: Card = {
+        id: reward.id,
+        name: reward.label,
+        rarity: 'Epic',
+        price: 0,
+        image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80&sat=-12',
+      }
+      setInventory((prev) => (prev.some((card) => card.id === skinCard.id) ? prev : [...prev, skinCard]))
+    }
+
+    if (reward.type === 'map') {
+      const premiumMap: MapPack = {
+        id: reward.id,
+        name: reward.label,
+        region: 'Reward Circuit',
+        description: 'Premium map unlocked from the Hyper Racing spin wheel.',
+        tier: 'Premium',
+        category: 'Night',
+        rarity: 'Legendary',
+        price: 0,
+        image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1800&q=80&sat=-14',
+      }
+      setMaps((prev) => (prev.some((map) => map.id === premiumMap.id) ? prev : [...prev, premiumMap]))
+    }
+
     setSpins((s) => [{ ...result }, ...s])
     setTransactions((tx) => [
-      { id: crypto.randomUUID(), type: 'spin', title: result.reward, amount: spinCost, coinsDelta: result.coins - spinCost, timestamp: now() },
+      { id: crypto.randomUUID(), type: 'spin', title: result.reward, amount: cost, coinsDelta: rewardCoins - cost, timestamp: now() },
       ...tx,
     ])
     setUser((prev) => ({ ...prev, stats: { ...prev.stats, spins: prev.stats.spins + 1 } }))

@@ -1,109 +1,92 @@
 import { motion } from 'framer-motion'
-import { useState, useEffect } from 'react'
 import { PageShell } from '../components/PageShell'
 import { GlowCard } from '../components/GlowCard'
 import { useGame } from '../context/GameContext'
-import { api, type CardItem } from '../services/api'
+import blackFormulaCar from '../assets/gallery/black-formula-racing-car.png'
+import redFormulaCar from '../assets/gallery/red-formula-racing-car.png'
+import yellowFormulaCar from '../assets/gallery/yellow-formula-racing-car.png'
+import redBlackPrototypeCar from '../assets/gallery/red-black-prototype-racing-car.png'
+import yellowSportsCar from '../assets/gallery/yellow-sports-racing-car.png'
+import redSportsCar from '../assets/gallery/red-sports-racing-car.png'
 
-const cardBg =
-  'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2100&q=80&sat=-14'
+type StoreCard = {
+  id: string
+  name: string
+  rarity: 'Common' | 'Rare' | 'Epic' | 'Legendary'
+  price: number
+  image: string
+  description: string
+}
 
-const fallbackCards: CardItem[] = [
+const storeCards: StoreCard[] = [
   {
-    id: 'vx-tempest',
-    name: 'VX-09 Tempest',
+    id: 'obsidian-f36-card',
+    name: 'Obsidian F36 Skin',
     rarity: 'Epic',
     price: 1200,
-    image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1400&q=80&sat=-12',
+    image: blackFormulaCar,
+    description: 'Black formula livery with silver aero accents.',
   },
   {
-    id: 'phantom-gt',
-    name: 'Phantom GT',
+    id: 'crimson-f36-card',
+    name: 'Crimson F36 Skin',
     rarity: 'Legendary',
     price: 2200,
-    image: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1400&q=80&sat=-10',
+    image: redFormulaCar,
+    description: 'Red formula skin built for premium race-night loadouts.',
   },
   {
-    id: 'nova-r',
-    name: 'Nova R',
+    id: 'solar-f30-card',
+    name: 'Solar F30 Skin',
     rarity: 'Rare',
     price: 800,
-    image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1400&q=80&sat=-18',
+    image: yellowFormulaCar,
+    description: 'Bright yellow open-wheel card for technical drivers.',
   },
   {
-    id: 'ion-vortex',
-    name: 'ION Vortex',
-    rarity: 'Common',
-    price: 360,
-    image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80&sat=-10',
+    id: 'apex-prototype-68-card',
+    name: 'Apex Prototype 68',
+    rarity: 'Legendary',
+    price: 2600,
+    image: redBlackPrototypeCar,
+    description: 'Prototype racer card with endurance-class presence.',
   },
   {
-    id: 'lunar-rift',
-    name: 'Lunar Rift',
+    id: 'veloce-gt-y-card',
+    name: 'Veloce GT-Y Skin',
     rarity: 'Epic',
-    price: 1400,
-    image: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1800&q=80&sat=-12',
+    price: 1500,
+    image: yellowSportsCar,
+    description: 'Yellow GT skin for sports racing events.',
   },
   {
-    id: 'veil-gt',
-    name: 'Veil GT',
+    id: 'crimson-gt-56-card',
+    name: 'Crimson GT-56 Skin',
     rarity: 'Rare',
     price: 980,
-    image: 'https://images.unsplash.com/photo-1493236296276-d17357e28875?auto=format&fit=crop&w=1800&q=80&sat=-14',
+    image: redSportsCar,
+    description: 'Red sports racer card with black aero trim.',
   },
 ]
 
 export const CardStore = () => {
   const { coins, inventory, buyCard } = useGame()
-  const [cards, setCards] = useState<CardItem[]>(fallbackCards)
-  const [loading, setLoading] = useState(true)
-  const [buying, setBuying] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchCards = async () => {
-      try {
-        const response = await api.content.bootstrap()
-        if (response.success && response.data?.cards) {
-          setCards(response.data.cards)
-        }
-      } catch (err) {
-        console.warn('Using fallback cards:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchCards()
-  }, [])
-
-  const handleBuy = async (card: CardItem) => {
-    setBuying(card.id)
-    try {
-      const response = await api.content.cardsBuy({ cardId: card.id })
-      if (response.success) {
-        buyCard(card as any)
-      } else {
-        console.error('Purchase failed:', response.error)
-      }
-    } catch (err) {
-      console.error('Purchase error:', err)
-    } finally {
-      setBuying(null)
-    }
+  const handleBuy = (card: StoreCard) => {
+    buyCard(card)
   }
-
-  const inventoryList = inventory as unknown as CardItem[]
 
   return (
     <PageShell
       eyebrow="Marketplace"
       title="Card Store"
-      subtitle="Collect cinematic car cards, level up rarities, and expand your garage loadout."
-      backgroundImage={cardBg}
+      subtitle="Buy premium racing cards and car skins using RS coins for your Hyper Racing garage."
+      backgroundImage={redBlackPrototypeCar}
     >
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <GlowCard eyebrow="Reserve" title="Wallet" tone="info">
           <div className="flex items-center justify-between text-3xl font-semibold text-white">
-            <span>{coins.toLocaleString()} coins</span>
+            <span>{coins.toLocaleString()} RS</span>
             <span className="text-sm text-rose-100">Ready to deploy</span>
           </div>
         </GlowCard>
@@ -115,39 +98,59 @@ export const CardStore = () => {
                 {card.name}
               </span>
             ))}
-            {inventory.length === 0 ? <span className="text-slate-300">No cards yet—buy one to start.</span> : null}
+            {inventory.length === 0 ? <span className="text-slate-300">No cards yet - buy one to start.</span> : null}
           </div>
         </GlowCard>
       </div>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {cards.map((card) => {
+      <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {storeCards.map((card) => {
           const owned = inventory.some((c) => c.id === card.id)
+          const affordable = coins >= card.price
+
           return (
-            <motion.div
+            <motion.article
               key={card.id}
-              whileHover={{ y: -4, scale: 1.01 }}
-              className="glass-panel relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 shadow-glow"
+              whileHover={{ y: -6, scale: 1.01 }}
+              transition={{ type: 'spring', stiffness: 220, damping: 18 }}
+              className="glass-panel group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 shadow-glow"
             >
-              <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-black/60" aria-hidden />
-              <div className="relative h-40 rounded-xl bg-cover bg-center" style={{ backgroundImage: `url(${card.image})` }} />
-              <div className="relative mt-3 flex items-center justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-rose-100">{card.rarity}</p>
-                  <h3 className="text-lg font-semibold text-white">{card.name}</h3>
-                  <p className="text-sm text-slate-300">{card.price.toLocaleString()} coins</p>
-                </div>
-                <span className="rounded-full border border-white/15 bg-white/10 px-2 py-1 text-[11px] text-white">{owned ? 'Owned' : 'New'}</span>
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-black/70" aria-hidden />
+              <div className="relative h-44 overflow-hidden rounded-xl">
+                <img
+                  src={card.image}
+                  alt={card.name}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                <span className="absolute left-3 top-3 rounded-full border border-white/15 bg-black/55 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-rose-100 backdrop-blur">
+                  {card.rarity}
+                </span>
+                <span className="absolute right-3 top-3 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-white backdrop-blur">
+                  {owned ? 'Owned' : 'Locked'}
+                </span>
               </div>
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                disabled={owned || coins < card.price}
-                onClick={() => handleBuy(card)}
-                className="neon-button relative mt-3 w-full rounded-xl bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {owned ? 'In garage' : 'Buy card'}
-              </motion.button>
-            </motion.div>
+
+              <div className="relative mt-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">{card.name}</h3>
+                    <p className="mt-1 text-sm text-slate-300">{card.description}</p>
+                  </div>
+                  <p className="whitespace-nowrap text-sm font-semibold text-rose-100">{card.price.toLocaleString()} RS</p>
+                </div>
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.97 }}
+                  disabled={owned || !affordable}
+                  onClick={() => handleBuy(card)}
+                  className="neon-button relative mt-4 w-full rounded-xl bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {owned ? 'Owned' : affordable ? 'Buy Card' : 'Not enough RS'}
+                </motion.button>
+              </div>
+            </motion.article>
           )
         })}
       </div>

@@ -7,14 +7,11 @@ import { Navbar } from './components/Navbar'
 import { Footer } from './components/Footer'
 import { Home } from './pages/Home'
 import { Cars as CarsPage } from './pages/Cars'
-import { Categories } from './pages/Categories'
-import { Gallery as GalleryPage } from './pages/Gallery'
 import { About } from './pages/About'
 import { Contact } from './pages/Contact'
 import { Login } from './pages/Login'
 import { Register } from './pages/Register'
 import { AuthDashboard } from './pages/AuthDashboard'
-import { Profile } from './pages/Profile'
 import { CoinStore } from './pages/CoinStore'
 import { SpinWheel } from './pages/SpinWheel'
 import { CommunityChat } from './pages/CommunityChat'
@@ -52,14 +49,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/cars" element={<CarsPage />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/auth" element={<AuthDashboard />} />
-          <Route path="/profile" element={<Profile />} />
           <Route path="/coin-store" element={<CoinStore />} />
           <Route path="/spin" element={<SpinWheel />} />
           <Route path="/community" element={<CommunityChat />} />

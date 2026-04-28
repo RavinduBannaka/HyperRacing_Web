@@ -1,44 +1,59 @@
+import blackFormulaCar from '../assets/gallery/black-formula-racing-car.png'
+import redFormulaCar from '../assets/gallery/red-formula-racing-car.png'
+import yellowFormulaCar from '../assets/gallery/yellow-formula-racing-car.png'
+import redBlackPrototypeCar from '../assets/gallery/red-black-prototype-racing-car.png'
+import yellowSportsCar from '../assets/gallery/yellow-sports-racing-car.png'
+import redSportsCar from '../assets/gallery/red-sports-racing-car.png'
+
 export type Category = {
   name: string
   distance: string
   mood: string
   image: string
+  description: string
 }
 
 export const categories: Category[] = [
   {
-    name: 'Circuit / Grand Prix',
-    distance: '5-7 km',
-    mood: 'Technical apex mastery',
-    image:
-      'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2200&q=80&sat=-12',
+    name: 'Formula Cars',
+    distance: '3 builds',
+    mood: 'Open-wheel precision',
+    image: blackFormulaCar,
+    description: 'Lightweight formula machines built for aero grip, reaction speed, and surgical apex control.',
   },
   {
-    name: 'Sprint / Street',
-    distance: '3-5 km',
-    mood: 'Tight city night run',
-    image:
-      'https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=2200&q=80&sat=-18',
+    name: 'Premium Formula',
+    distance: 'Elite tier',
+    mood: 'Scarlet speed class',
+    image: redFormulaCar,
+    description: 'Top-spec formula racers with premium liveries and aggressive straight-line pace.',
   },
   {
-    name: 'Drift / Exhibition',
-    distance: 'Custom',
-    mood: 'Smoke, lights, precision',
-    image:
-      'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=2200&q=80&sat=-18',
+    name: 'Rookie Formula',
+    distance: 'Entry tier',
+    mood: 'Bright technical grip',
+    image: yellowFormulaCar,
+    description: 'Balanced open-wheel cars for mastering racing lines before stepping into elite divisions.',
   },
   {
-    name: 'Hypercar / Endurance',
-    distance: '10+ km',
-    mood: 'Night endurance dominance',
-    image:
-      'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=2200&q=80&sat=-22',
+    name: 'Prototype Racers',
+    distance: 'Endurance class',
+    mood: 'Hybrid aero dominance',
+    image: redBlackPrototypeCar,
+    description: 'Red and black prototype machines for long-run stability, speed, and event circuits.',
   },
   {
-    name: 'EV Performance',
-    distance: '4-6 km',
-    mood: 'Silent torque storm',
-    image:
-      'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=2200&q=80&sat=-18',
+    name: 'Sports Cars',
+    distance: 'GT class',
+    mood: 'Wide-body power',
+    image: yellowSportsCar,
+    description: 'Sports racing builds with road-car silhouettes, heavy downforce, and confident grip.',
+  },
+  {
+    name: 'Premium Cars',
+    distance: 'Legend class',
+    mood: 'Collector performance',
+    image: redSportsCar,
+    description: 'High-value racing cards and garage heroes for players chasing standout track style.',
   },
 ]

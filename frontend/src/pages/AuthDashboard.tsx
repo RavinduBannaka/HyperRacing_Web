@@ -1,14 +1,23 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
 import { PageShell } from '../components/PageShell'
 import { useGame } from '../context/GameContext'
 
+type AuthLog = {
+  id: string
+  type: 'success' | 'error' | 'info'
+  message: string
+}
+
 export const AuthDashboard = () => {
   const { login, register } = useGame()
-  const navigate = useNavigate()
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [logs, setLogs] = useState<AuthLog[]>([
+    { id: 'log-ready', type: 'info', message: 'Auth dashboard ready for login or registration.' },
+  ])
 
   const [loginEmail, setLoginEmail] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
@@ -22,55 +31,88 @@ export const AuthDashboard = () => {
     confirm: '',
   })
 
+  const addLog = (type: AuthLog['type'], message: string) => {
+    setLogs((prev) => [{ id: crypto.randomUUID(), type, message }, ...prev].slice(0, 6))
+  }
+
+  const switchMode = (nextMode: 'login' | 'register') => {
+    setMode(nextMode)
+    setError('')
+    setSuccess('')
+    addLog('info', `Switched to ${nextMode} mode.`)
+  }
+
   const handleRegisterChange = (key: keyof typeof registerData, value: string) => {
     setRegisterData((prev) => ({ ...prev, [key]: value }))
   }
 
-  const onLoginSubmit = async (event: React.FormEvent) => {
+  const onLoginSubmit = async (event: FormEvent) => {
     event.preventDefault()
-    if (!loginEmail || !loginPassword) {
+    if (!loginEmail.trim() || !loginPassword) {
       setError('Please enter both email and password to login.')
+      setSuccess('')
+      addLog('error', 'Login blocked: missing email or password.')
       return
     }
 
     try {
+      setLoading(true)
       setError('')
-      await login(loginEmail, loginPassword)
-      navigate('/profile')
+      setSuccess('')
+      addLog('info', `Login requested for ${loginEmail.trim()}.`)
+      await login(loginEmail.trim(), loginPassword)
+      setSuccess('Login successful. Auth dashboard session is active.')
+      addLog('success', `Login successful for ${loginEmail.trim()}.`)
     } catch (err) {
-      setError((err as Error).message || 'Unable to login. Please check your credentials.')
+      const message = (err as Error).message || 'Unable to login. Please check your credentials.'
+      setError(message)
+      addLog('error', message)
+    } finally {
+      setLoading(false)
     }
   }
 
-  const onRegisterSubmit = async (event: React.FormEvent) => {
+  const onRegisterSubmit = async (event: FormEvent) => {
     event.preventDefault()
-    if (
-      !registerData.displayName ||
-      !registerData.email ||
-      !registerData.password ||
-      !registerData.confirm ||
-      !registerData.age
-    ) {
-      setError('Complete all fields before creating your dashboard profile.')
+    if (!registerData.displayName.trim() || !registerData.email.trim() || !registerData.password || !registerData.confirm) {
+      setError('Username, email, password, and confirm password are required.')
+      setSuccess('')
+      addLog('error', 'Registration blocked: required fields are missing.')
       return
     }
     if (registerData.password !== registerData.confirm) {
       setError('Passwords must match.')
+      setSuccess('')
+      addLog('error', 'Registration blocked: passwords do not match.')
+      return
+    }
+    if (registerData.password.length < 8) {
+      setError('Password must be at least 8 characters.')
+      setSuccess('')
+      addLog('error', 'Registration blocked: password is too short.')
       return
     }
 
     try {
+      setLoading(true)
       setError('')
+      setSuccess('')
+      addLog('info', `Registration requested for ${registerData.email.trim()}.`)
       await register({
-        displayName: registerData.displayName,
-        age: Number(registerData.age),
+        displayName: registerData.displayName.trim(),
+        age: Number(registerData.age) || 18,
         bio: registerData.bio || 'New racer joining the Hyper grid.',
-        email: registerData.email,
+        email: registerData.email.trim(),
         password: registerData.password,
       })
-      navigate('/profile')
+      setSuccess('Registration successful. Auth dashboard session is active.')
+      addLog('success', `Registration successful for ${registerData.displayName.trim()}.`)
     } catch (err) {
-      setError((err as Error).message || 'Unable to register. Please try again.')
+      const message = (err as Error).message || 'Unable to register. Please try again.'
+      setError(message)
+      addLog('error', message)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -78,13 +120,13 @@ export const AuthDashboard = () => {
     <PageShell
       eyebrow="Dashboard"
       title="Auth Center"
-      subtitle="Use a single dashboard to switch between login and register flows with AppWire authentication."
+      subtitle="Login or register from one premium Hyper Racing dashboard."
       backgroundImage="https://images.unsplash.com/photo-1518977956816-a5b221364623?auto=format&fit=crop&w=2000&q=80&sat=-10"
       cta={
         <div className="flex flex-wrap gap-3">
           <button
             type="button"
-            onClick={() => setMode('login')}
+            onClick={() => switchMode('login')}
             className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
               mode === 'login' ? 'bg-rose-500 text-white' : 'bg-white/10 text-slate-200 hover:bg-white/15'
             }`}
@@ -93,7 +135,7 @@ export const AuthDashboard = () => {
           </button>
           <button
             type="button"
-            onClick={() => setMode('register')}
+            onClick={() => switchMode('register')}
             className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
               mode === 'register' ? 'bg-rose-500 text-white' : 'bg-white/10 text-slate-200 hover:bg-white/15'
             }`}
@@ -115,6 +157,7 @@ export const AuthDashboard = () => {
                   onChange={(e) => setLoginEmail(e.target.value)}
                   className="mt-2 w-full rounded-2xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none ring-rose-400/40 focus:ring"
                   placeholder="you@hyper.gg"
+                  required
                 />
               </div>
               <div>
@@ -124,29 +167,33 @@ export const AuthDashboard = () => {
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   className="mt-2 w-full rounded-2xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none ring-rose-400/40 focus:ring"
-                  placeholder="••••••••"
+                  placeholder="********"
+                  required
                 />
               </div>
               {error ? <p className="text-sm text-rose-200">{error}</p> : null}
+              {success ? <p className="text-sm text-emerald-200">{success}</p> : null}
               <motion.button
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="neon-button w-full rounded-3xl bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-5 py-3 text-sm font-semibold text-white"
+                disabled={loading}
+                className="neon-button w-full rounded-3xl bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Sign in to dashboard
+                {loading ? 'Signing in...' : 'Sign in to dashboard'}
               </motion.button>
             </form>
           ) : (
             <form onSubmit={onRegisterSubmit} className="space-y-5">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="text-sm text-slate-200">Display Name</label>
+                  <label className="text-sm text-slate-200">Username</label>
                   <input
                     value={registerData.displayName}
                     onChange={(e) => handleRegisterChange('displayName', e.target.value)}
                     className="mt-2 w-full rounded-2xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none ring-rose-400/40 focus:ring"
-                    placeholder="Ava “Driftline”"
+                    placeholder='Ava "Driftline"'
+                    required
                   />
                 </div>
                 <div>
@@ -156,7 +203,8 @@ export const AuthDashboard = () => {
                     value={registerData.age}
                     onChange={(e) => handleRegisterChange('age', e.target.value)}
                     className="mt-2 w-full rounded-2xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none ring-rose-400/40 focus:ring"
-                    placeholder="27"
+                    placeholder="18"
+                    min={1}
                   />
                 </div>
               </div>
@@ -168,6 +216,7 @@ export const AuthDashboard = () => {
                   onChange={(e) => handleRegisterChange('email', e.target.value)}
                   className="mt-2 w-full rounded-2xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none ring-rose-400/40 focus:ring"
                   placeholder="you@hyper.gg"
+                  required
                 />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -178,17 +227,19 @@ export const AuthDashboard = () => {
                     value={registerData.password}
                     onChange={(e) => handleRegisterChange('password', e.target.value)}
                     className="mt-2 w-full rounded-2xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none ring-rose-400/40 focus:ring"
-                    placeholder="••••••••"
+                    placeholder="********"
+                    required
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-slate-200">Confirm</label>
+                  <label className="text-sm text-slate-200">Confirm Password</label>
                   <input
                     type="password"
                     value={registerData.confirm}
                     onChange={(e) => handleRegisterChange('confirm', e.target.value)}
                     className="mt-2 w-full rounded-2xl border border-white/15 bg-black/30 px-4 py-3 text-white outline-none ring-rose-400/40 focus:ring"
-                    placeholder="••••••••"
+                    placeholder="********"
+                    required
                   />
                 </div>
               </div>
@@ -202,13 +253,15 @@ export const AuthDashboard = () => {
                 />
               </div>
               {error ? <p className="text-sm text-rose-200">{error}</p> : null}
+              {success ? <p className="text-sm text-emerald-200">{success}</p> : null}
               <motion.button
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="neon-button w-full rounded-3xl bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-5 py-3 text-sm font-semibold text-white"
+                disabled={loading}
+                className="neon-button w-full rounded-3xl bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Create dashboard profile
+                {loading ? 'Creating profile...' : 'Create dashboard profile'}
               </motion.button>
             </form>
           )}
@@ -219,25 +272,39 @@ export const AuthDashboard = () => {
             <p className="text-xs uppercase tracking-[0.24em] text-rose-100">Unified flow</p>
             <h3 className="mt-2 text-xl font-semibold text-white">Login + register together</h3>
             <p className="mt-3 text-sm text-slate-200">
-              Keep auth consistent with AppWire and let racers access the same dashboard experience for both login and onboarding.
-            </p>
-          </div>
-          <div className="glass-panel rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 via-white/10 to-transparent p-5">
-            <h4 className="text-sm uppercase tracking-[0.24em] text-cyan-100">AppWire ready</h4>
-            <p className="mt-2 text-sm text-slate-200">
-              Add your AppWire project ID and endpoint in a .env file to connect these auth forms to your backend.
+              Both forms update the same player session and keep racers inside the Auth Center.
             </p>
           </div>
           <div className="glass-panel rounded-3xl border border-white/10 bg-white/5 p-5">
             <div className="flex items-center justify-between">
-              <p className="text-xs uppercase tracking-[0.24em] text-rose-100">Dashboard perks</p>
-              <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] uppercase text-slate-300">Fast auth</span>
+              <p className="text-xs uppercase tracking-[0.24em] text-rose-100">Auth Log</p>
+              <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] uppercase text-slate-300">Live</span>
             </div>
-            <ul className="mt-3 space-y-2 text-sm text-slate-200">
-              <li>• Shared session model for login and registration</li>
-              <li>• Redirect to profile on success</li>
-              <li>• Clear error messaging for API failures</li>
-            </ul>
+            <div className="mt-3 space-y-2">
+              {logs.map((log) => (
+                <div key={log.id} className="rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-sm text-slate-200">
+                  <span
+                    className={
+                      log.type === 'success'
+                        ? 'text-emerald-200'
+                        : log.type === 'error'
+                          ? 'text-rose-200'
+                          : 'text-cyan-100'
+                    }
+                  >
+                    {log.type.toUpperCase()}
+                  </span>
+                  <span className="text-slate-400"> - </span>
+                  {log.message}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="glass-panel rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 via-white/10 to-transparent p-5">
+            <h4 className="text-sm uppercase tracking-[0.24em] text-cyan-100">Backend ready</h4>
+            <p className="mt-2 text-sm text-slate-200">
+              If the API is offline, the app uses a local demo session so you can still test the dashboard.
+            </p>
           </div>
         </div>
       </div>

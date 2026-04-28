@@ -1,13 +1,43 @@
 import { motion } from 'framer-motion'
 import { useScrollReveal } from '../hooks/useScrollReveal'
+import blackFormulaCar from '../assets/gallery/black-formula-racing-car.png'
+import redFormulaCar from '../assets/gallery/red-formula-racing-car.png'
+import yellowFormulaCar from '../assets/gallery/yellow-formula-racing-car.png'
+import redBlackPrototypeCar from '../assets/gallery/red-black-prototype-racing-car.png'
+import yellowSportsCar from '../assets/gallery/yellow-sports-racing-car.png'
+import redSportsCar from '../assets/gallery/red-sports-racing-car.png'
 
 const gallery = [
-  'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2200&q=80&sat=-12',
-  'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=2200&q=80&sat=-18',
-  'https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=2200&q=80&sat=-18',
-  'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=2200&q=80&sat=-18',
-  'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=2200&q=80&sat=-12',
-  'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2200&q=80&sat=-22',
+  {
+    title: 'Black Formula Racing Car',
+    caption: 'Carbon-black open wheel machine built for late-brake precision.',
+    image: blackFormulaCar,
+  },
+  {
+    title: 'Red Formula Racing Car',
+    caption: 'Scarlet aero package with aggressive circuit stance.',
+    image: redFormulaCar,
+  },
+  {
+    title: 'Yellow Formula Racing Car',
+    caption: 'High-visibility formula racer tuned for apex speed.',
+    image: yellowFormulaCar,
+  },
+  {
+    title: 'Red/Black Prototype Racing Car',
+    caption: 'Endurance prototype silhouette with hybrid-track attitude.',
+    image: redBlackPrototypeCar,
+  },
+  {
+    title: 'Yellow Sports Racing Car',
+    caption: 'Wide-body sports racer with bright GT-class energy.',
+    image: yellowSportsCar,
+  },
+  {
+    title: 'Red Sports Racing Car',
+    caption: 'Red track weapon with low-slung aero and bronze wheels.',
+    image: redSportsCar,
+  },
 ]
 
 export const Gallery = () => {
@@ -15,34 +45,50 @@ export const Gallery = () => {
 
   return (
     <section ref={sectionRef} id="gallery" className="relative z-10 px-6 py-20 sm:px-8 lg:px-14">
-      <div className="section-shell">
-        <div className="flex flex-wrap items-baseline justify-between gap-4">
+      <div className="section-shell overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(244,63,94,0.14),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.06),transparent_42%)]" />
+        <div className="relative flex flex-wrap items-end justify-between gap-5">
           <div>
             <p className="text-sm uppercase tracking-[0.28em] text-rose-100">Gallery</p>
-            <h2 className="font-display text-3xl text-white sm:text-4xl">Cinematic shots in 4K</h2>
+            <h2 className="font-display text-3xl text-white sm:text-4xl">HYPER RACING Gallery</h2>
           </div>
-          <p className="max-w-xl text-slate-300">
-            Every capture is a frame from a racing film—glossy carbon, razor silhouettes, and night circuits drenched in
-            speed.
+          <p className="max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
+            Six cinematic racing machines, staged as premium track cards for the Hyper Racing grid.
           </p>
         </div>
 
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {gallery.map((image, idx) => (
-            <motion.div
-              key={image + idx}
-              className="relative h-56 overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-glow md:h-64"
-              whileHover={{ scale: 1.01, y: -4 }}
+        <div className="relative mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {gallery.map((car, idx) => (
+            <motion.article
+              key={car.title}
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-black/45 shadow-[0_0_40px_rgba(244,63,94,0.12)]"
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ duration: 0.45, delay: idx * 0.05 }}
+              whileHover={{ y: -6, scale: 1.01 }}
             >
-              <div
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-110"
-                style={{ backgroundImage: `url(${image})` }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
-              <div className="absolute bottom-3 left-3 text-xs uppercase tracking-[0.2em] text-rose-100">
-                Frame {idx + 1}
+              <div className="relative aspect-[1.52/1] overflow-hidden">
+                <img
+                  src={car.image}
+                  alt={car.title}
+                  className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
+                <div className="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100">
+                  <div className="absolute inset-0 bg-gradient-to-r from-rose-500/18 via-transparent to-slate-200/10" />
+                </div>
+                <div className="absolute left-4 top-4 rounded-full border border-white/15 bg-black/50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-rose-100 backdrop-blur">
+                  Legend {idx + 1}
+                </div>
               </div>
-            </motion.div>
+
+              <div className="relative border-t border-white/10 bg-gradient-to-br from-white/[0.06] via-white/[0.03] to-transparent p-4">
+                <h3 className="text-lg font-semibold text-white">{car.title}</h3>
+                <p className="mt-1 text-sm leading-5 text-slate-300">{car.caption}</p>
+              </div>
+            </motion.article>
           ))}
         </div>
       </div>
