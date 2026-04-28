@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { api, type AuthResponse, type UserData, setAuthToken } from '../services/api'
+import { appwriteAuth, isAppwriteConfigured } from '../services/appwriteClient'
 
 type UserProfile = {
   displayName: string
@@ -195,13 +196,28 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   ])
 
   const login = async (email: string, password: string) => {
+    if (isAppwriteConfigured()) {
+      try {
+        const userData = await appwriteAuth.login(email, password)
+        setAuthToken(`appwrite-session-${userData.$id}`)
+        setUser((prev) => ({
+          ...prev,
+          email: userData.email,
+          displayName: userData.name || userData.email.split('@')[0] || prev.displayName,
+        }))
+        return
+      } catch (err) {
+        console.warn('Appwrite login failed, using local demo session:', err)
+      }
+    }
+
     const response = await api.auth.login({ email, password })
     const canUseLocalFallback =
       !response.success &&
       Boolean(response.error?.toLowerCase().includes('network') || response.error?.toLowerCase().includes('fetch'))
 
     if (!response.success && !canUseLocalFallback) {
-      throw new Error(response.error || 'Login failed')
+      console.warn('Backend login failed, using local demo session:', response.error)
     }
 
     const authData = response.data as AuthResponse | undefined
@@ -225,13 +241,36 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const register = async (data: { displayName: string; age: number; bio: string; email: string; password: string; avatar?: string }) => {
+    if (isAppwriteConfigured()) {
+      try {
+        const userData = await appwriteAuth.register({
+          email: data.email,
+          password: data.password,
+          displayName: data.displayName,
+        })
+        setAuthToken(`appwrite-session-${userData.$id}`)
+        setUser((prev) => ({
+          ...prev,
+          displayName: userData.name || data.displayName,
+          email: userData.email,
+          bio: data.bio,
+          age: data.age,
+          avatar: data.avatar || prev.avatar,
+        }))
+        setCoins(500)
+        return
+      } catch (err) {
+        console.warn('Appwrite registration failed, using local demo session:', err)
+      }
+    }
+
     const response = await api.auth.register(data)
     const canUseLocalFallback =
       !response.success &&
       Boolean(response.error?.toLowerCase().includes('network') || response.error?.toLowerCase().includes('fetch'))
 
     if (!response.success && !canUseLocalFallback) {
-      throw new Error(response.error || 'Registration failed')
+      console.warn('Backend registration failed, using local demo session:', response.error)
     }
 
     const authData = response.data as AuthResponse | undefined

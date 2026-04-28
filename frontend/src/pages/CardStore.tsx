@@ -1,7 +1,10 @@
+import { useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { PageShell } from '../components/PageShell'
 import { GlowCard } from '../components/GlowCard'
 import { useGame } from '../context/GameContext'
+import { useAppwriteCollection } from '../hooks/useAppwriteCollection'
+import { appwriteConfig } from '../services/appwriteClient'
 import blackFormulaCar from '../assets/gallery/black-formula-racing-car.png'
 import redFormulaCar from '../assets/gallery/red-formula-racing-car.png'
 import yellowFormulaCar from '../assets/gallery/yellow-formula-racing-car.png'
@@ -71,6 +74,22 @@ const storeCards: StoreCard[] = [
 
 export const CardStore = () => {
   const { coins, inventory, buyCard } = useGame()
+  const mapStoreCardDocument = useCallback(
+    (document: any): StoreCard => ({
+      id: document.cardId ?? document.slug ?? document.$id,
+      name: document.name,
+      rarity: document.rarity,
+      price: Number(document.price ?? 0),
+      image: document.image,
+      description: document.description,
+    }),
+    [],
+  )
+  const { data: liveStoreCards, loading, error, live } = useAppwriteCollection<StoreCard>(
+    appwriteConfig.collections.storeCards,
+    mapStoreCardDocument,
+    storeCards,
+  )
 
   const handleBuy = (card: StoreCard) => {
     buyCard(card)
@@ -103,8 +122,16 @@ export const CardStore = () => {
         </GlowCard>
       </div>
 
+      <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-300">
+        <span className={`rounded-full border px-3 py-1 ${live ? 'border-emerald-300/40 bg-emerald-400/10 text-emerald-100' : 'border-white/10 bg-white/5'}`}>
+          {live ? 'Live Appwrite store' : 'Local dev store'}
+        </span>
+        {loading ? <span>Loading Appwrite store cards...</span> : null}
+        {error ? <span className="text-rose-200">{error}</span> : null}
+      </div>
+
       <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {storeCards.map((card) => {
+        {liveStoreCards.map((card) => {
           const owned = inventory.some((c) => c.id === card.id)
           const affordable = coins >= card.price
 

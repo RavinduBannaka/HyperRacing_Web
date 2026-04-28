@@ -1,7 +1,11 @@
+import { useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { categories as categoryData } from '../data/categories'
+import type { Category } from '../data/categories'
 import { SectionTitle } from './SectionTitle'
+import { useAppwriteCollection } from '../hooks/useAppwriteCollection'
+import { appwriteConfig } from '../services/appwriteClient'
 
 type CircuitProps = {
   eyebrow?: string
@@ -12,7 +16,22 @@ type CircuitProps = {
 
 export const Circuit = ({ eyebrow, title, description, limit }: CircuitProps) => {
   const sectionRef = useScrollReveal({ y: 40 })
-  const circuits = limit ? categoryData.slice(0, limit) : categoryData
+  const mapCategoryDocument = useCallback(
+    (document: any): Category => ({
+      name: document.name,
+      distance: document.distance,
+      mood: document.mood,
+      image: document.image,
+      description: document.description,
+    }),
+    [],
+  )
+  const { data: liveCategories, loading, error, live } = useAppwriteCollection<Category>(
+    appwriteConfig.collections.categories,
+    mapCategoryDocument,
+    categoryData,
+  )
+  const circuits = limit ? liveCategories.slice(0, limit) : liveCategories
 
   return (
     <section
@@ -35,6 +54,14 @@ export const Circuit = ({ eyebrow, title, description, limit }: CircuitProps) =>
             <span className="h-2 w-2 rounded-full bg-rose-300 animate-pulsefast" />
             Live session scanning - {circuits.length} classes loaded
           </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-300">
+          <span className={`rounded-full border px-3 py-1 ${live ? 'border-emerald-300/40 bg-emerald-400/10 text-emerald-100' : 'border-white/10 bg-white/5'}`}>
+            {live ? 'Live Appwrite categories' : 'Local dev categories'}
+          </span>
+          {loading ? <span>Loading Appwrite categories...</span> : null}
+          {error ? <span className="text-rose-200">{error}</span> : null}
         </div>
 
         <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
