@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { api } from '../services/api'
+import { api, type CoinBalanceResponse } from '../services/api'
 
 export const ApiTest = () => {
   const [testResult, setTestResult] = useState<string>('')
@@ -17,10 +17,11 @@ export const ApiTest = () => {
         setTestResult(`✅ Backend healthy! Now testing coins...`)
 
         // Test coins endpoint
-        const coinsResponse = await api.coins.get()
+        const coinsResponse = await api.coins.balance()
 
         if (coinsResponse.success) {
-          setTestResult(`✅ Connected! Coins: ${coinsResponse.data?.amount || coinsResponse.data || 'N/A'}`)
+          const coinData = coinsResponse.data as CoinBalanceResponse | undefined
+          setTestResult(`✅ Connected! Coins: ${coinData?.coinBalance ?? 'N/A'}`)
         } else {
           setTestResult(`✅ Health OK, but coins failed: ${coinsResponse.error}`)
         }

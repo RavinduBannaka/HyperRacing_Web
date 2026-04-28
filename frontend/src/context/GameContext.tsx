@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { isAppwireConfigured, loginWithAppwire, registerWithAppwire } from '../services/appwireAuth'
+import { api, type AuthResponse, type UserData, setAuthToken } from '../services/api'
 
 type UserProfile = {
   displayName: string
@@ -187,7 +187,6 @@ const GameContext = createContext<GameContextShape | null>(null)
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProfile>(defaultUser)
-  const [authToken, setAuthToken] = useState<string | null>(null)
   const [coins, setCoins] = useState(2400)
   const [inventory, setInventory] = useState<Card[]>(starterCards.slice(0, 2))
   const [maps, setMaps] = useState<MapPack[]>(starterMaps)
@@ -203,33 +202,43 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   ])
 
   const login = async (email: string, password: string) => {
-    if (isAppwireConfigured()) {
-      const result = await loginWithAppwire(email, password)
-      if (!result.user) {
-        throw new Error(result.message || 'Login failed. Please verify your credentials.')
-      }
-      setAuthToken(result.token ?? null)
-      setUser((prev) => ({ ...prev, ...normalizeUser(result.user) }))
+    const response = await api.auth.login({ email, password })
+    if (!response.success || !response.data) {
+      throw new Error(response.error || 'Login failed')
+    }
+    const authData = response.data as AuthResponse
+    setAuthToken(authData.token)
+    
+    const userResponse = await api.auth.me()
+    if (userResponse.success && userResponse.data) {
+      const userData = userResponse.data as UserData
+      setUser((prev) => ({
+        ...prev,
+        email: userData.email,
+        displayName: userData.displayName,
+      }))
+      setCoins(userData.coinBalance || 0)
       return
     }
-
-    void password
+    
     setUser((prev) => ({ ...prev, email }))
   }
 
   const register = async (data: { displayName: string; age: number; bio: string; email: string; password: string }) => {
-    if (isAppwireConfigured()) {
-      const result = await registerWithAppwire(data)
-      if (!result.user) {
-        throw new Error(result.message || 'Registration failed. Please try again.')
-      }
-      setAuthToken(result.token ?? null)
-      setUser((prev) => ({ ...prev, ...normalizeUser(result.user) }))
-      return
+    const response = await api.auth.register(data)
+    if (!response.success || !response.data) {
+      throw new Error(response.error || 'Registration failed')
     }
-
-    void data.password
-    setUser((prev) => ({ ...prev, ...data }))
+    const authData = response.data as AuthResponse
+    setAuthToken(authData.token)
+    setUser((prev) => ({
+      ...prev,
+      displayName: data.displayName,
+      email: data.email,
+      bio: data.bio,
+      age: data.age,
+    }))
+    setCoins(authData.user?.coinBalance || 500)
   }
 
   const updateProfile = (payload: Partial<UserProfile>) => {

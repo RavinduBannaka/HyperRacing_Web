@@ -19,6 +19,7 @@ export const Register = () => {
     confirm: '',
   })
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,7 +31,12 @@ export const Register = () => {
       setError('Passwords must match.')
       return
     }
+    if (form.password.length < 8) {
+      setError('Password must be at least 8 characters.')
+      return
+    }
     setError('')
+    setLoading(true)
     try {
       await register({
         displayName: form.displayName,
@@ -42,6 +48,8 @@ export const Register = () => {
       navigate('/profile')
     } catch (err) {
       setError((err as Error).message || 'Registration failed. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -125,9 +133,10 @@ export const Register = () => {
             type="submit"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="neon-button sm:col-span-2 w-full rounded-xl bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-5 py-3 text-center text-sm font-semibold text-white shadow-neon"
+            disabled={loading}
+            className="neon-button sm:col-span-2 w-full rounded-xl bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-5 py-3 text-center text-sm font-semibold text-white shadow-neon disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Create racer profile
+            {loading ? 'Creating profile...' : 'Create racer profile'}
           </motion.button>
         </form>
 

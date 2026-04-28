@@ -83,7 +83,7 @@ const RacingMap: React.FC = () => {
 
   // Game timer
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (gameState.isRacing) {
       interval = setInterval(() => {
         setGameState(prev => ({

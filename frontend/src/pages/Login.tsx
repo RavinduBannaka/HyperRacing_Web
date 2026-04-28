@@ -13,6 +13,7 @@ export const Login = () => {
   const [email, setEmail] = useState(user.email)
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const qrUrl =
     'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fhyperracing.app%2Flogin%2Fqr'
 
@@ -23,11 +24,14 @@ export const Login = () => {
       return
     }
     setError('')
+    setLoading(true)
     try {
       await login(email, password)
       navigate('/profile')
     } catch (err) {
       setError((err as Error).message || 'Login failed. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -70,9 +74,10 @@ export const Login = () => {
             type="submit"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="neon-button w-full rounded-xl bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-5 py-3 text-center text-sm font-semibold text-white shadow-neon"
+            disabled={loading}
+            className="neon-button w-full rounded-xl bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-5 py-3 text-center text-sm font-semibold text-white shadow-neon disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Enter the cockpit
+            {loading ? 'Connecting...' : 'Enter the cockpit'}
           </motion.button>
           <div className="grid gap-3 sm:grid-cols-2">
             <motion.button

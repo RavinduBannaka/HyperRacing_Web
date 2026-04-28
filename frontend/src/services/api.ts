@@ -1,11 +1,75 @@
 // Backend API Service for 192.168.1.5:3000
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://192.168.1.5:3000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://192.168.1.5:3000/api'
 
-interface ApiResponse<T = any> {
+let authToken: string | null = null
+
+export const setAuthToken = (token: string | null) => {
+  authToken = token
+}
+
+export const getAuthToken = () => authToken
+
+export interface ApiResponse<T = any> {
   success: boolean
   data?: T
   message?: string
   error?: string
+}
+
+export interface UserData {
+  id?: string
+  email: string
+  displayName: string
+  coinBalance?: number
+}
+
+export interface AuthResponse {
+  token: string
+  user: UserData
+}
+
+export interface CoinBalanceResponse {
+  coinBalance: number
+}
+
+export interface HealthResponse {
+  status: string
+  timestamp: string
+}
+
+export interface BootstrapResponse {
+  cards: CardItem[]
+  maps: MapItem[]
+  channels: string[]
+  chatSeed: ChatMessage[]
+}
+
+export interface CardItem {
+  id: string
+  name: string
+  rarity: string
+  price: number
+  image: string
+}
+
+export interface MapItem {
+  id: string
+  name: string
+  region: string
+  description: string
+  tier: string
+  category: string
+  rarity: string
+  price: number
+  image: string
+}
+
+export interface ChatMessage {
+  id: string
+  user: string
+  avatar: string
+  time: string
+  content: string
 }
 
 class ApiService {
@@ -22,11 +86,17 @@ class ApiService {
     try {
       const url = `${this.baseURL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`
 
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        ...options.headers as Record<string, string>,
+      }
+
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`
+      }
+
       const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
+        headers,
         ...options,
       })
 
@@ -95,10 +165,8 @@ export const apiService = new ApiService(API_BASE_URL)
 
 // Example usage functions for common endpoints
 export const api = {
-  // Health check
   health: () => apiService.get('/health'),
 
-  // Authentication
   auth: {
     login: (credentials: { email: string; password: string }) =>
       apiService.post('/auth/login', credentials),
@@ -108,19 +176,21 @@ export const api = {
 
     logout: () => apiService.post('/auth/logout'),
 
-    refresh: () => apiService.post('/auth/refresh'),
+    me: () => apiService.get('/auth/me'),
   },
 
-  // User profile
   profile: {
     get: () => apiService.get('/profile'),
     update: (data: any) => apiService.put('/profile', data),
   },
 
-  // Game data
   coins: {
-    get: () => apiService.get('/coins'),
-    update: (amount: number) => apiService.put('/coins', { amount }),
+    balance: () => apiService.get('/coins/balance'),
+    packages: () => apiService.get('/coins/packages'),
+    purchase: (data: { packageId: string; cardNumber: string; expiry: string; cvv: string }) =>
+      apiService.post('/coins/purchase', data),
+    spend: (data: { amount: number; reason?: string }) =>
+      apiService.post('/coins/spend', data),
   },
 
   inventory: {
@@ -135,8 +205,11 @@ export const api = {
   },
 
   content: {
-    get: () => apiService.get('/content'),
-    update: (data: any) => apiService.put('/content', data),
+    bootstrap: () => apiService.get<BootstrapResponse>('/content/bootstrap'),
+    cardsBuy: (data: { cardId: string }) =>
+      apiService.post('/content/cards/buy', data),
+    mapsBuy: (data: { mapId: string }) =>
+      apiService.post('/content/maps/buy', data),
   },
 }
 

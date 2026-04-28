@@ -1,58 +1,97 @@
 import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
 import { PageShell } from '../components/PageShell'
 import { GlowCard } from '../components/GlowCard'
 import { useGame } from '../context/GameContext'
+import { api, type CardItem } from '../services/api'
 
 const cardBg =
   'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2100&q=80&sat=-14'
 
-const cards = [
+const fallbackCards: CardItem[] = [
   {
     id: 'vx-tempest',
     name: 'VX-09 Tempest',
-    rarity: 'Epic' as const,
+    rarity: 'Epic',
     price: 1200,
     image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1400&q=80&sat=-12',
   },
   {
     id: 'phantom-gt',
     name: 'Phantom GT',
-    rarity: 'Legendary' as const,
+    rarity: 'Legendary',
     price: 2200,
     image: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1400&q=80&sat=-10',
   },
   {
     id: 'nova-r',
     name: 'Nova R',
-    rarity: 'Rare' as const,
+    rarity: 'Rare',
     price: 800,
     image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1400&q=80&sat=-18',
   },
   {
     id: 'ion-vortex',
     name: 'ION Vortex',
-    rarity: 'Common' as const,
+    rarity: 'Common',
     price: 360,
     image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80&sat=-10',
   },
   {
     id: 'lunar-rift',
     name: 'Lunar Rift',
-    rarity: 'Epic' as const,
+    rarity: 'Epic',
     price: 1400,
     image: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1800&q=80&sat=-12',
   },
   {
     id: 'veil-gt',
     name: 'Veil GT',
-    rarity: 'Rare' as const,
+    rarity: 'Rare',
     price: 980,
     image: 'https://images.unsplash.com/photo-1493236296276-d17357e28875?auto=format&fit=crop&w=1800&q=80&sat=-14',
   },
 ]
 
 export const CardStore = () => {
-  const { buyCard, inventory, coins } = useGame()
+  const { coins, inventory, buyCard } = useGame()
+  const [cards, setCards] = useState<CardItem[]>(fallbackCards)
+  const [loading, setLoading] = useState(true)
+  const [buying, setBuying] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchCards = async () => {
+      try {
+        const response = await api.content.bootstrap()
+        if (response.success && response.data?.cards) {
+          setCards(response.data.cards)
+        }
+      } catch (err) {
+        console.warn('Using fallback cards:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchCards()
+  }, [])
+
+  const handleBuy = async (card: CardItem) => {
+    setBuying(card.id)
+    try {
+      const response = await api.content.cardsBuy({ cardId: card.id })
+      if (response.success) {
+        buyCard(card as any)
+      } else {
+        console.error('Purchase failed:', response.error)
+      }
+    } catch (err) {
+      console.error('Purchase error:', err)
+    } finally {
+      setBuying(null)
+    }
+  }
+
+  const inventoryList = inventory as unknown as CardItem[]
 
   return (
     <PageShell
@@ -103,7 +142,7 @@ export const CardStore = () => {
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 disabled={owned || coins < card.price}
-                onClick={() => buyCard(card)}
+                onClick={() => handleBuy(card)}
                 className="neon-button relative mt-3 w-full rounded-xl bg-gradient-to-r from-rose-500 via-red-500 to-orange-400 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {owned ? 'In garage' : 'Buy card'}
