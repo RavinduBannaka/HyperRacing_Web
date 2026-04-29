@@ -11,7 +11,7 @@ import { About } from './pages/About'
 import { Contact } from './pages/Contact'
 import { Login } from './pages/Login'
 import { Register } from './pages/Register'
-import { AuthDashboard } from './pages/AuthDashboard'
+//import { AuthDashboard } from './pages/AuthDashboard'
 import { CoinStore } from './pages/CoinStore'
 import { SpinWheel } from './pages/SpinWheel'
 import { CommunityChat } from './pages/CommunityChat'
@@ -53,7 +53,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/auth" element={<AuthDashboard />} />
+          
           <Route path="/coin-store" element={<CoinStore />} />
           <Route path="/spin" element={<SpinWheel />} />
           <Route path="/community" element={<CommunityChat />} />
